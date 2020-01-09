@@ -4,6 +4,7 @@
             "name": "Arduino Uno",
             "includePath": [
                 "${workspaceFolder}/**",
+                "${workspaceRoot}/**",
                 "/Applications/Arduino.app/Contents/Java/tools/**",
                 "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/**",
                 "/Applications/Arduino.app/Contents/Java/hardware/tools/avr/avr/include/**",
@@ -13,6 +14,7 @@
                 "limitSymbolsToIncludedHeaders": false,
                 "path": [
                     "${workspaceFolder}/**",
+                    "${workspaceRoot}/**",
                     "/Applications/Arduino.app/Contents/Java/tools/**",
                     "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/**",
                     "/Applications/Arduino.app/Contents/Java/hardware/tools/avr/avr/include/**",
@@ -29,6 +31,16 @@
             "intelliSenseMode": "clang-x64",
             "cStandard": "c11",
             "cppStandard": "c++17"
+        },
+        {
+            "name": "Mac",
+            "includePath": [
+                "/Users/honamlau/Library/Arduino15/packages/arduino/tools/**",
+                "/Users/honamlau/Library/Arduino15/packages/arduino/hardware/megaavr/1.8.5/**"
+            ],
+            "forcedInclude": [
+                "/Users/honamlau/Library/Arduino15/packages/arduino/hardware/megaavr/1.8.5/cores/arduino/Arduino.h"
+            ]
         }
     ],
     "version": 4

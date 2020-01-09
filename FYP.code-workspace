@@ -5,6 +5,9 @@
 		}
 	],
 	"settings": {
-		"arduino.path": "/Applications/Arduino.app"
+		"arduino.path": "/Applications/Arduino.app",
+		"arduino.skipHeaderProvider": true,
+		"C_Cpp.intelliSenseEngine": "Tag Parser",
+		"arduino.defaultBaudRate": 9600
 	}
 }
