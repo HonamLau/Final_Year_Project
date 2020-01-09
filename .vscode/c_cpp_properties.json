@@ -1,0 +1,35 @@
+{
+    "configurations": [
+        {
+            "name": "Arduino Uno",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/Applications/Arduino.app/Contents/Java/tools/**",
+                "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/**",
+                "/Applications/Arduino.app/Contents/Java/hardware/tools/avr/avr/include/**",
+                "~/Documents/Arduino/libraries/**"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": false,
+                "path": [
+                    "${workspaceFolder}/**",
+                    "/Applications/Arduino.app/Contents/Java/tools/**",
+                    "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/**",
+                    "/Applications/Arduino.app/Contents/Java/hardware/tools/avr/avr/include/**",
+                    "~/Documents/Arduino/libraries/**"
+                ]
+            },
+            "forcedInclude": [
+                "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino/Arduino.h"
+            ],
+            "defines": [
+                "USBCON",
+                "ARDUINO=10809"
+            ],
+            "intelliSenseMode": "clang-x64",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}

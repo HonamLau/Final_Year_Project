@@ -1,0 +1,6 @@
+{
+    "sketch": "arduino/arduino.ino",
+    "board": "arduino:avr:unowifi",
+    "programmer": "AVR ISP",
+    "port": "/dev/cu.Bluetooth-Incoming-Port"
+}
