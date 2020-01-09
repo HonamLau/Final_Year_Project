@@ -2,6 +2,10 @@
     "sketch": "arduino.ino",
     "board": "arduino:megaavr:uno2018",
     "programmer": "AVR ISP",
+<<<<<<< HEAD
     "port": "/dev/cu.Bluetooth-Incoming-Port",
+=======
+    "port": "/dev/cu.usbmodem14112",
+>>>>>>> 19c9269fbff47a5ea3fd31036ec112a083636a95
     "configuration": "mode=on"
 }
