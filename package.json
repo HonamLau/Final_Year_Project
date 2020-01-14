@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/HonamLau/Final_Year_Project#readme",
   "dependencies": {
-    "express-ws": "^4.0.0"
+    "express": "^4.17.1",
+    "express-ws": "^4.0.0",
+    "save": "^2.4.0"
   }
 }
