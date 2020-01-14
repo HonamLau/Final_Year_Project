@@ -1,12 +1,9 @@
 const http = require("http");
 const app = require('express')();
 const path = require('path');
-// coonst appWs = require('express-ws')(app);
-
-
 
 app.get('/',function(request, response){
-    response.send('Hello World')
+    response.sendFile(path.join(__dirname,'../','public','index.html'))
 }
 );
 
