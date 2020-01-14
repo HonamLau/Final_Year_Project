@@ -1,6 +1,8 @@
-var http = require("http");
-var app = require('express')();
-var appWs = require('express-ws')(app);
+const http = require("http");
+const app = require('express')();
+const path = require('path');
+// coonst appWs = require('express-ws')(app);
+
 
 
 app.get('/',function(request, response){
