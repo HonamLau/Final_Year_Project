@@ -2,6 +2,6 @@
     "sketch": "arduino.ino",
     "board": "arduino:megaavr:uno2018",
     "programmer": "AVR ISP",
-    "port": "/dev/cu.usbmodem14112",
+    "port": "/dev/cu.usbmodem14132",
     "configuration": "mode=on"
 }
