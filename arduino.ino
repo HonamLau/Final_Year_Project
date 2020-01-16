@@ -6,10 +6,7 @@ char ssid[] = SECRET_SSID;
 char pass[] = SECRET_PASS; 
 char user[] = SECRET_USER;
 
-
 int status = WL_IDLE_STATUS;    
-
-
 //IPAddress server(74,125,232,128);  // numeric IP for Google (no DNS)
 char server[] = "143.89.130.87/";    // name address for Google (using DNS)t pingResult;
 WiFiClient client;
