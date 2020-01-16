@@ -43,6 +43,28 @@ void loop() {
   delay(5000);
 }
 
+void connectServer(){
+client.stop();
+int reading = analogRead(13);
+if (client.connect(server, 5000)) {
+    Serial.println("connected to server");
+    client.println("POST /arduino HTTP/1.1");
+    //client.println("Host: 143.89.130.87");
+    //client.println("User-Agent: Arduino/1.0");
+    client.println("Content-Type: application/x-www-form-urlencoded");
+    client.print("Content-Length: ");
+    client.println(postData.length());
+    client.println();
+    client.print("voltage is unknown");
+    Serial.println("voltage is unknown");
+  }
+  else{
+    Serial.println("failed to connect to server");
+  }
+
+
+}
+
 void printWiFiData() {
   // print your board's IP address:
   IPAddress ip = WiFi.localIP();
