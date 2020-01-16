@@ -7,7 +7,11 @@ char ssid[] = SECRET_SSID;
 char pass[] = SECRET_PASS; 
 char user[] = SECRET_USER;
 
+<<<<<<< HEAD
 int status = WL_IDLE_STATUS;    
+=======
+int status = WL_IDLE_STATUS;     
+>>>>>>> 541665bc9f08d7eb9cd6c9cbd46cb18407ee60ee
 
 
 //IPAddress server(74,125,232,128);  // numeric IP for Google (no DNS)
@@ -39,8 +43,13 @@ void setup() {
 }
 
 void loop() {
+<<<<<<< HEAD
   //Serial.print("Hello");
   //Serial.print("Hellohihi");
+=======
+  Serial.print("Hello");
+  Serial.print("Hellohihi");
+>>>>>>> 541665bc9f08d7eb9cd6c9cbd46cb18407ee60ee
   delay(5000);
   WebClient();
 

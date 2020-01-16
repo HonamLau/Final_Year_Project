@@ -1,2 +1,3 @@
-#define SECRET_SSID "AndroidAP6A71"
-#define SECRET_PASS "pdqo3236" 
+#define SECRET_SSID "eduroam";
+#define SECRET_PASS "1A2b3c4d";
+#define SECRET_USER "chmokab";
