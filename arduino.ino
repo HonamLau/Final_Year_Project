@@ -1,11 +1,11 @@
 
 #include <SPI.h>
 #include <WiFiNINA.h>
-
 #include "arduino_secrets.h" 
 char ssid[] = SECRET_SSID;        
 char pass[] = SECRET_PASS; 
 char user[] = SECRET_USER;
+
 
 int status = WL_IDLE_STATUS;    
 
