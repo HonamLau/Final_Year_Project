@@ -9,7 +9,9 @@ char user[] = SECRET_USER;
 
 int status = WL_IDLE_STATUS;     
 
-String hostName = "www.google.com";
+char server[] = "143.89.130.87";    // name address for Google (using DNS)
+WiFiClient client;
+
 int pingResult;
 
 void setup() {
@@ -35,12 +37,16 @@ void setup() {
   Serial.println("You're connected to the network");
   printCurrentNet();
   printWiFiData();
+
+  WebClientSetUp();
 }
 
 void loop() {
   Serial.print("Hello");
   //Serial.print("Hellohihi");
+  WebClientRead();
   delay(5000);
+
 }
 
 void connectServer(){
@@ -65,6 +71,34 @@ if (client.connect(server, 5000)) {
 
 }
 
+void WebClientSetUp(){
+if (client.connect(server, 5000)) {
+    Serial.println("connected to server");
+    // Make a HTTP request:
+    client.println("GET /");
+    //client.println("Host: www.google.com");
+    //client.println("Connection: close");
+    client.println();
+  }
+
+}
+void WebClientRead(){
+while (client.available()) {
+    char c = client.read();
+    Serial.write(c);
+  }
+
+  // if the server's disconnected, stop the client:
+  if (!client.connected()) {
+    Serial.println();
+    Serial.println("disconnecting from server.");
+    client.stop();
+
+    // do nothing forevermore:
+    while (true);
+  }
+
+}
 void printWiFiData() {
   // print your board's IP address:
   IPAddress ip = WiFi.localIP();
