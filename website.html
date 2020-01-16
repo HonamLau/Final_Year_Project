@@ -1,0 +1,94 @@
+<html>
+<head>
+    <title>Green Office Energy Monitoring Network</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {font-family: "Lato", sans-serif;}
+
+.tablink {
+  background-color: #555;
+  color: white;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  font-size: 17px;
+  width: 20%;
+}
+
+.tablink:hover {
+  background-color: #777;
+}
+
+/* Style the tab content */
+.tabcontent {
+  color: white;
+  display: none;
+  padding: 50px;
+  text-align: center;
+}
+
+#Dashboard {background-color:red;}
+#Socket-control {background-color:orange;}
+#Office-setting {background-color:yellow;}
+#Data-analysis {background-color:green;}
+#Power-scheduling {background-color:blue}
+</style>
+</head>
+<body>
+
+<div id="Dashboard" class="tabcontent">
+  <h1>Dashboard</h1>
+  <p>caption of the Dashboard</p>
+</div>
+
+<div id="Socket-control" class="tabcontent">
+  <h1>Socket Control</h1>
+  <p>caption of the socket control</p> 
+</div>
+
+<div id="Office-setting" class="tabcontent">
+  <h1>Office Setting</h1>
+  <p>caption of the office setting</p>
+</div>
+
+<div id="Data-analysis" class="tabcontent">
+  <h1>Data Analysis</h1>
+  <p>caption of the data analysis</p>
+</div>
+
+<div id="Power-scheduling" class="tabcontent">
+  <h1>Power scheduling</h1>
+  <p>caption of the power scheduling</p>
+</div>
+
+<button class="tablink" onclick="openTab('Dashboard', this, 'red')" id="defaultOpen">Dashboard</button>
+<button class="tablink" onclick="openTab('Socket-control', this, 'orange')">Socket-control</button>
+<button class="tablink" onclick="openTab('Office-setting', this, 'yellow')">Office-setting</button>
+<button class="tablink" onclick="openTab('Data-analysis', this, 'green')">Data-analysis</button>
+<button class="tablink" onclick="openTab('Power-scheduling', this, 'blue')">Power-scheduling</button>
+
+<script>
+function openTab(functionName,elmnt,color) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablink");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].style.backgroundColor = "";
+  }
+  document.getElementById(functionName).style.display = "block";
+  elmnt.style.backgroundColor = color;
+
+}
+// Get the element with id="defaultOpen" and click on it
+document.getElementById("defaultOpen").click();
+</script>
+
+
+</body>
+</html>
