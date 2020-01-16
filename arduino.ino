@@ -38,8 +38,8 @@ void setup() {
 }
 
 void loop() {
-  Serial.print("Hello");
-  //Serial.print("Hellohihi");
+  //Serial.print("Hello");
+  Serial.print("Hellohihi");
   delay(5000);
 }
 
