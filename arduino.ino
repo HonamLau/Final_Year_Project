@@ -2,10 +2,11 @@
 #include <SPI.h>
 #include <WiFiNINA.h>
 
-
 #include "arduino_secrets.h" 
 char ssid[] = SECRET_SSID;        
-char pass[] = SECRET_PASS;    
+char pass[] = SECRET_PASS; 
+char user[] = SECRET_USER;
+
 int status = WL_IDLE_STATUS;     
 
 String hostName = "www.google.com";
@@ -26,9 +27,8 @@ void setup() {
   while ( status != WL_CONNECTED) {
     Serial.print("Attempting to connect to WPA SSID: ");
     Serial.println(ssid);
-    // Connect to WPA/WPA2 network:
-    status = WiFi.begin(ssid, pass);
-
+   
+    status = WiFi.beginEnterprise(ssid, user, pass);  
     delay(5000);
   }
 

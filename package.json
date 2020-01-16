@@ -2,9 +2,9 @@
   "name": "Final_Year_Project",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node src /server.js",
+    "start": "node src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/HonamLau/Final_Year_Project#readme",
   "dependencies": {
-    "express-ws": "^4.0.0"
+    "express": "^4.17.1",
+    "express-ws": "^4.0.0",
+    "save": "^2.4.0"
   }
 }
