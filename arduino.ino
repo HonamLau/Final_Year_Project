@@ -2,15 +2,17 @@
 #include <SPI.h>
 #include <WiFiNINA.h>
 
-
 #include "arduino_secrets.h" 
 char ssid[] = SECRET_SSID;        
-char pass[] = SECRET_PASS;    
-int status = WL_IDLE_STATUS;     
+char pass[] = SECRET_PASS; 
+char user[] = SECRET_USER;
 
-String hostName = "www.google.com";
-int pingResult;
+int status = WL_IDLE_STATUS;    
 
+
+//IPAddress server(74,125,232,128);  // numeric IP for Google (no DNS)
+char server[] = "143.89.130.87/";    // name address for Google (using DNS)t pingResult;
+WiFiClient client;
 void setup() {
   
   Serial.begin(9600);
@@ -26,9 +28,8 @@ void setup() {
   while ( status != WL_CONNECTED) {
     Serial.print("Attempting to connect to WPA SSID: ");
     Serial.println(ssid);
-    // Connect to WPA/WPA2 network:
-    status = WiFi.begin(ssid, pass);
-
+   
+    status = WiFi.beginEnterprise(ssid, user, pass);  
     delay(5000);
   }
 
@@ -38,9 +39,23 @@ void setup() {
 }
 
 void loop() {
-  Serial.print("Hello");
+  //Serial.print("Hello");
   //Serial.print("Hellohihi");
   delay(5000);
+  WebClient();
+
+}
+
+void WebClient(){
+if (client.connect(server, 5000)) {
+    Serial.println("connected to server");
+    // Make a HTTP request:
+    //client.println("GET /search?q=arduino HTTP/1.1");
+    //client.println("Host: www.google.com");
+    //client.println("Connection: close");
+    client.println();
+  }
+
 }
 
 void printWiFiData() {
