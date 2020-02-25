@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost/Final_Year_Project',function(err, db) {
+mongoose.connect('mongodb://localhost/Final_Year_Project', { useNewUrlParser: true , useUnifiedTopology: true}, function(err, db) {
     if (err) throw err;
     console.log("Database created!");
-    db.close();
+    // db.close();
   });
 
 const db = mongoose.connection;
@@ -18,12 +18,3 @@ let Socket = require('./Socket');
 
 const models = module.exports.models = {Socket};
 
-
-// var sock1 = new Socket({Name: 'test1', Voltage: 2});
-// sock1.save(function(err){
-//     if (err) {
-//         console.log('Error', err);
-//     } else {
-//         console.log('data inserted');
-//     }
-// });
