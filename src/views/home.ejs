@@ -1,0 +1,50 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" />
+    <title>Office-Home</title>
+    <link href="css/styles.css" />
+
+    <style>body {background-color: rgb(233, 233, 210);}</style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <h1>Welcome to the Office Monitoring network</h1>
+      <h2>You are logged in as <%= name %></h2>
+      <a href="/auth/logout" onclick="return confirm('sure?')">Log Out</a><br>
+      <button onclick="window.location='143.89.130.87/auth/powerUsed/'">Power Used Today</button>><br>
+      <a href="">Look up your power use statistics</a><br>
+      <a href="">Schedule plans for your socket</a><br>
+      <a href=""></a>
+      <a href=""></a>
+      <% if (locals.lv>=5) { %>
+      <button id='manage'>Manage Your Office Environment</button>
+      <% } %>
+    </div>
+    
+    
+    
+   
+  </body>
+</html>
+
+
+ <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+ <!-- Latest compiled and minified JavaScript -->
+ <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+ <script>
+// if(true)
+//   document.getElementById("manage").style.display = "none";
+
+ 
+ </script>
+
