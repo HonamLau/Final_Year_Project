@@ -4,14 +4,15 @@ var socketSchema = new mongoose.Schema({
     socketID : {
         type: Number
     }, 
-    name: {
-        type: String
-    },
-    minVoltage : {
+   
+    minCurrent : {
         type: Number
     },
-    maxVoltage : {
+    maxCurrent : {
         type: Number
+    },
+    userName:{
+        type:String
     }
 });
 var Socket = module.exports = mongoose.model('Socket', socketSchema, 'Socket'); 

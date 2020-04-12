@@ -13,7 +13,16 @@ const registerValidation = data => {
             .required(),
         Email : Joi.string()
             .required()
-            .email()
+            .email(),
+        roleLevel : Joi.number()
+            .allow(1,5,10)
+            .only()
+            .required(),
+        Passcode : Joi.any()
+        .when('roleLevel',{
+                is : Joi.number().min(5),
+                then : Joi.string().required()
+            })
     });
     return schema.validate(data);
 };

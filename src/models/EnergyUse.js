@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 var usageSchema = new mongoose.Schema({ 
+    socketID : {
+        type: Number,
+        require : true
+    },
     datetime : {
         type: Date,
         default: Date.now
@@ -8,11 +12,11 @@ var usageSchema = new mongoose.Schema({
     current : {
         type: Number
     },
-    on : {
+    switchOn : {
         type: Boolean,
         default: false
     },
-    off : {
+    switchOff : {
         type: Boolean,
         default: false
     }

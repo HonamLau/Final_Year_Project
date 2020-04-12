@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const session = require('express-session');
 const jwt = require('jsonwebtoken');
 const verify = require('./verifyToken');
+const data=require('../models/Socket')
 
 const redirectHome = (req,res, next)=>{
     if(req.session.userId){
@@ -15,10 +16,33 @@ const redirectHome = (req,res, next)=>{
     next()
 }
 
+
 const {registerValidation, loginValidation} =  require('../validation');
 
 // Register user Backend
-
+router.get('/teststats',async(req,res)=>{
+    const today=new Date();
+    const stats=new data({
+        socketID: 0,
+        minCurrent: 0,
+        maxCurrent: 100,
+        userName:"phsze2"
+        
+    })
+    try{
+        const savedData = await stats.save((err)=>{
+            if(err){
+            console.log('cannot insert');
+            console.log(err);
+        }
+            else
+            console.log('data inserted');
+        });
+    }catch(err){
+        res.status(400).send(err);
+    }   
+    res.send('inserted! :D')
+})
 router.post('/login', async (req,res) => {
     console.log('logging in');
     const {error} =loginValidation(req.body);
@@ -38,10 +62,7 @@ router.post('/login', async (req,res) => {
         console.log('not exist');
         return res.render('login', {error: 'Username or Password is wrong!'});
     }
-    const level = await Users.find({userName:req.body.Username},{roleLevel:1});
-    const levell = level[0].roleLevel;
     
-console.log("Level: "+levell);
     //validating password
     validPassword = await bcrypt.compare(req.body.Password, existedUser.userPassword);
     if(!validPassword){
@@ -53,10 +74,10 @@ console.log("Level: "+levell);
         const token = jwt.sign({_id: existedUser._id}, process.env.TOKEN_SECRET);
         res.cookie('user',req.body.Username);
         res.cookie('authToken',token);
-        res.cookie('userLevel', levell);
+        res.cookie('userLevel', existedUser.roleLevel);
         //redirect
         
-        res.redirect('../home');
+        res.redirect('../');
     }
 });
 router.post('/register', async (req,res) => {
@@ -67,7 +88,20 @@ router.post('/register', async (req,res) => {
         console.log('validation error');
         return res.render('register',{validation: error.details[0].message});
     }
-
+    var roleName = 'User';
+    const roleLevel = req.body.roleLevel;
+    if (roleLevel>=5){
+        const passcode = req.body.Passcode;
+        console.log(req.body.Passcode);
+        if (passcode == 'manager' && roleLevel == 5){  
+            roleName = 'Manager';
+        }else if (passcode == 'admin' && roleLevel == 10){
+            roleName = 'Administrator';
+        }else{
+            console.log('wrong  passcode');
+            return res.render('register',{validation: 'Wrong Passcode'});
+        }
+    }
     // Find user in Database
     const existedUser = await Users.findOne({
         userName :  req.body.Username
@@ -85,8 +119,8 @@ router.post('/register', async (req,res) => {
         userName : req.body.Username,
         userPassword : hashPassword,
         name : req.body.Name,
-        roleName : req.body.roleName,
-        roleLevel : 1,
+        roleName : roleName,
+        roleLevel : req.body.roleLevel,
         email: req.body.Email
     });    
     
@@ -128,5 +162,6 @@ router.get('/powerUsed',(req,res)=>{
 router.get('/t',(req,res)=>{
     res.render('adminHome');
 })
+
 
 module.exports = router;

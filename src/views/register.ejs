@@ -4,84 +4,121 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" />
-    <title>Aromatherapy Health</title>
-    <link href="css/styles.css" />
-  </head>
-  <body>
-    <div class="container-fluid">
- 
-    </div>
-    <h1>Register</h1>
 
-<% if (locals.exist) { %>
-    <div class="alert alert-danger">
-        <strong>Error!</strong> <%= exist %> 
-    </div>
-<%}%>
-<% if (locals.validation) { %>
-    <div class="alert alert-danger">
-        <strong>Error!</strong> <%= validation%> !  
-    </div>
-<%}%>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 
-<% if (locals.success) { %>
-    <div class="alert alert-danger">
-        <strong><%= success%></strong> 
-    </div>
-<%}%>
-      
-<form action="/auth/register" method="POST" class ="registerForm"> 
-    <!-- <div>
-        <label for="userId">userId</label>
-        <input id="userId" type="text" id="userId" name="userId" required>
-    
-    </div> -->
-    <div>
-        <label for="Username">Username</label>
-        <input type="text" id="userName" name="Username" required>
-
-    </div>
-    <div>
-        <label for="password">Password</label>
-        <input type="password" id="userPassword" name="Password" required>
-    </div>
-    <div>
-        <label for="name">Name</label>
-        <input type="text" id="name" name="Name" required>
-
-    </div>
-    <div>
-        <label for="email">Email</label>
-        <input type="text" id="email" name="Email" required>
-
-    </div>
-    <!-- <div>
-        <label for="roleName">roleName</label>
-        <input type="text" id="roleName" name="roleName" required>
-
-    </div>
-    <div>
-        <label for="roleLevel">roleLevel</label>
-        <input type="number" id="roleLevel" name="roleLevel" required>
-
-    </div> -->
-
-<button type="submit" > register!</button>
-</form>
-
-<a href="/auth/login">Back to Login</a>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  
+    <title>Aromatherapy Health</title>
+    <link href="css/styles.css" />
+  </head>
+  <body>
+    <div class="container-fluid" style="top: 50%; left:50% ; position: absolute; transform: translate(-50%,-50%);"> 
+        <div class="row justify-content-center">
+            <div class="col" style="max-width: 330px;">
+                <h1 style="text-align: center;">Register</h1>
+                <% if (locals.exist) { %>
+                    <div class="alert alert-danger">
+                        <strong>Error!</strong> <%= exist %> 
+                    </div>
+                <%}%>
+                <% if (locals.validation) { %>
+                    <div class="alert alert-danger">
+                        <strong>Error!</strong> <%= validation%> !  
+                    </div>
+                <%}%>
+
+                <% if (locals.success) { %>
+                    <div class="alert alert-success">
+                        <strong><%= success%></strong> 
+                    </div>
+                <%}%>
+            
+                <form action="/auth/register" method="POST" class ="registerForm"> 
+                    <!-- <div>
+                        <label for="userId">userId</label>
+                        <input id="userId" type="text" id="userId" name="userId" required>
+                    
+                    </div> -->
+                    <div class="form-group">
+                        <label for="Username">Username</label>
+                        <input type="text" class="form-control" id="userName" name="Username" placeholder="Username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="userPassword" name="Password" placeholder="Password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" name="Name" placeholder="Name" required>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="text" class="form-control" id="email" name="Email" placeholder="Email" required>
+                    </div>
+                    <!-- <div>
+                        <label for="roleName">roleName</label>
+                        <input type="text" id="roleName" name="roleName" required>
+
+                    </div>
+                    <div>
+                        <label for="roleLevel">roleLevel</label>
+                        <input type="number" id="roleLevel" name="roleLevel" required>
+
+                    </div> -->
+                    <div class="form-group">
+                        <label for="userLevel">User Level</label>
+                        <select class="form-control" name="roleLevel" id="roleLevel" required>
+                            <option value="1">User</option>
+                            <option value="5">Manager</option>
+                            <option value="10">Administrator</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="passcodeDiv">
+                        <label for="passcode">Passcode</label>
+                        <input type="password" class="form-control" id="passcode" name="Passcode" placeholder="Enter the Passcode">
+                    </div>
+
+                    <div class="form-group">
+                        <a href="/auth/login">Go to Login</a>
+                    </div>
+                    <div class="form-group">    
+                        <button type="submit" class="btn btn-primary btn-block"> register!</button>
+                    </div>
+                </form>
+            </div>
+        </div>        
+    </div>
+   
+    <script>
+        $(document).ready(function(){
+            $('#passcodeDiv').hide();
+        });
+        
+        $(function(){
+            $('#roleLevel').on('change', function() {
+              if ( this.value >= 5)
+              {
+                $("#passcodeDiv").show();
+                $("#passcode").attr("required","true");
+              }
+              else
+              {
+                $("#passcodeDiv").hide();
+              }
+            });
+        });
+        
+         </script>
   </body>
 </html>
 
-<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 

@@ -1,0 +1,57 @@
+html,body{
+    overflow-x: hidden;
+}
+
+.sideMenu {
+    z-index: 2;
+    overflow-y: auto;
+    position: fixed;
+    transition: .8s;
+    height: 100%;
+    margin-left: -300px;
+    width: 300px;
+    background-color: #17A2B8;
+    visibility: hidden;
+    padding-top: 60px;
+}
+.sideMenu button {
+    position: absolute;
+    color: white;
+    right: 0px;
+}
+.sideMenu ul{
+    padding-top: 20vh;
+}
+.sideMenu li{
+    height: 7vh;
+}
+.sideMenu ul li a {
+    height: 100%;
+    color: white;
+    display: block;
+    text-align: center;
+    font-size: large;
+}
+.sideMenu i {
+    size: large;
+    color: white;
+    padding-left: 10px;
+    padding-right: 10px;
+    height: 95%;
+    width: auto;
+
+}
+
+.sideMenu #sideLogout {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+   
+}
+.sideMenu li a:hover {
+    background-color: rgb(73, 212, 234);
+}
+.sideMenu.active {
+    margin-left: 0;
+    visibility: visible;
+}
