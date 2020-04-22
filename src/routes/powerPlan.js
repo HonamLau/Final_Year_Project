@@ -5,7 +5,7 @@ const verify = require('./verifyToken');
 // const Users = require('../models/Users');
 // const bcrypt = require('bcryptjs');
 
-router.get('/userManage',verify, (req,res)=>{
+router.get('/managePower',verify, (req,res)=>{
     console.log(req.cookies.authToken);
     res.render('managePower',{name : req.cookies.user, lv: req.cookies.userLevel});
     });

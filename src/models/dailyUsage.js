@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 var dailySchema = new mongoose.Schema({ 
     socketID : {
-        type: Number
+        type: String
     }, 
    day:{
         type:Number

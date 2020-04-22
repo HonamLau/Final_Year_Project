@@ -80,6 +80,7 @@ router.post('/login', async (req,res) => {
         res.redirect('../');
     }
 });
+
 router.post('/register', async (req,res) => {
     console.log('register');
     // register validation

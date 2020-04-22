@@ -15,14 +15,50 @@
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   
-    <title>Aromatherapy Health</title>
-    <link href="css/styles.css" />
+    <title>Green-Office-Network-Register</title>
+    <link href="../styles/style.css" rel="stylesheet" type="text/css"/>
+
+    <style>
+        @media screen and (min-width: 660px) {
+        h1 {
+            font-size: 60px;
+        }
+        h2 {
+            font-size: 27px;
+        }
+        .form-group,.form-control, .alert-danger {
+            font-size: 15px;
+        }
+        .registerScreen{
+            margin-top: 7vh;
+        }
+    }
+    @media screen and (max-width: 659px) {
+        h1 {
+            font-size: 50px;
+        }
+        h2 {
+            font-size: 20px;
+        }
+        .form-group,.form-control, .alert-danger {
+            font-size: 10px;
+        }
+        .registerScreen{
+            margin-top: 10vh;
+        }
+    }
+    </style>
   </head>
   <body>
-    <div class="container-fluid" style="top: 50%; left:50% ; position: absolute; transform: translate(-50%,-50%);"> 
+    <!-- <div class="container-fluid" style="top: 50%; left:50% ; position: absolute; transform: translate(-50%,-50%);">  -->
+    <div class="registerScreen">
         <div class="row justify-content-center">
-            <div class="col" style="max-width: 330px;">
-                <h1 style="text-align: center;">Register</h1>
+            <h1 id="title" style="text-align: center; font-weight: bold;">Green Office Network</h1>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <h2 style="text-align: center; color:#660099">Register</h1>
                 <% if (locals.exist) { %>
                     <div class="alert alert-danger">
                         <strong>Error!</strong> <%= exist %> 
@@ -101,21 +137,58 @@
     <script>
         $(document).ready(function(){
             $('#passcodeDiv').hide();
+            // var danger = $(".alert alert-danger");
+            // if(danger != null){
+            //     console.log("danger");
+            //     // $(".registerScreen").css("margin-top","1vh");
+            // }
         });
         
         $(function(){
             $('#roleLevel').on('change', function() {
+            var width = $(window).width();
               if ( this.value >= 5)
               {
                 $("#passcodeDiv").show();
                 $("#passcode").attr("required","true");
+                if (width>=660){
+                        $(".registerScreen").css("margin-top","1vh");
+                    }else{
+                        $(".registerScreen").css("margin-top","6vh");
+                    }
               }
               else
               {
                 $("#passcodeDiv").hide();
-              }
+                if (width>=660){
+                        $(".registerScreen").css("margin-top","7vh");
+                    }else{
+                        $(".registerScreen").css("margin-top","10vh");
+                    }
+              } 
             });
         });
+        $(function(){
+            $(window).resize(function(){
+                var width = $(window).width();
+                if($("#passcodeDiv").is(":visible")){
+                    console.log("vis");
+                    if (width>=660){
+                        $(".registerScreen").css("margin-top","1vh");
+                    }else{
+                        $(".registerScreen").css("margin-top","6vh");
+                    }
+                }else{
+                    if (width>=660){
+                        $(".registerScreen").css("margin-top","7vh");
+                    }else{
+                        $(".registerScreen").css("margin-top","10vh");
+                    }
+                }
+            });
+        });
+
+        
         
          </script>
   </body>

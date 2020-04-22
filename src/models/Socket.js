@@ -2,9 +2,8 @@ const mongoose = require('mongoose');
 
 var socketSchema = new mongoose.Schema({ 
     socketID : {
-        type: Number
+        type: String
     }, 
-   
     minCurrent : {
         type: Number
     },
@@ -13,6 +12,14 @@ var socketSchema = new mongoose.Schema({
     },
     userName:{
         type:String
+    },
+    attached:{
+        type: Boolean,
+        default:false
+    },
+    MAC:{
+        type:String
     }
 });
+
 var Socket = module.exports = mongoose.model('Socket', socketSchema, 'Socket'); 

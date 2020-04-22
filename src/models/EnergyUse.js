@@ -2,13 +2,26 @@ const mongoose = require('mongoose');
 
 var usageSchema = new mongoose.Schema({ 
     socketID : {
-        type: Number,
+        type: String,
         require : true
     },
-    datetime : {
-        type: Date,
-        default: Date.now
-    },
+    // datetime : {
+    //     type: Date,
+        
+    // },
+    // Year:{type: Number},
+
+    // Month:{type: Number},
+
+    // Day:{type: Number},
+    YMD:{type: String},
+    
+    Hour:{type: Number},
+
+    Minute:{type:Number},
+
+    dateTime:{type :Date},
+
     current : {
         type: Number
     },

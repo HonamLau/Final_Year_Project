@@ -1,0 +1,49 @@
+<html>
+    <head></head>
+    <body>
+        socket test
+        <input type="text">
+        <button type="button" id="connect">connect</button>
+        <button type="button" id="disconnect" disabled>disconnect</button>
+    </body>
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"
+    ></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        $(document).ready(function(){
+            // var socket = io.connect('/IOT');
+            // var socket = io.of('/IOT');
+            // $("#disconnect").prop("disabled","true");
+        });
+        $("#connect").on("click", function(){
+            console.log("click");
+            var socket = io.connect('/IOT');
+            socket.emit('socketToServer', 'MAC','data');
+            $("#connect").prop("disabled","true");
+            $("#disconnect").prop("disabled","false");
+            $("#disconnect").removeAttr("disabled");
+        });
+
+        $("#disconnect").on("click", function(){
+            socket.disconnect();
+            $("#disconnect").prop("disabled","true");
+            $("#connect").prop("disabled","false");
+            $("#connect").removeAttr("disabled");
+        });
+        
+    </script>
+    
+</html>

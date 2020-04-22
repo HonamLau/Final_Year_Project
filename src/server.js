@@ -2,11 +2,11 @@ const http = require("http");
 const session = require("express-session");
 const express = require('express');
 const app = express();
-const expressWs = require('express-ws')(app);
+// const expressWs = require('express-ws')(app);
 const path = require('path');
 const db = require('./models/db');
-const Sockett=require('./models/Socket')
-const bodyParser = require('body-parser');
+const Socket = require('./models/Socket');
+const Users = require('./models/Users');
 const url = require('url');
 const mongoose = require('mongoose');
 
@@ -17,10 +17,11 @@ const cookieParser = require('cookie-parser');
 const loginRedirect = require('./routes/loginRedirect');
 const daily=require('./models/dailyUsage');
 
-
+const verifyAdmin = require('./routes/verifyAdmin');
 const models = db.models;
-var Socket =  models.Socket; 
+// var Socket =  models.Socket; 
 var EnergyUse =  models.EnergyUse; 
+// var users = models.Users;
 
 // Get Router
 const authRouter = require('./routes/auth');
@@ -31,60 +32,67 @@ const planRouter = require('./routes/powerPlan');
 
 dotenv.config({path:'./src/.env'});
 
-router.get('/',loginRedirect, function(req, res){
+router.get('/',loginRedirect, async function(req, res){
     // res.sendFile(path.join(__dirname,'../','public','index.html'))
     // res.redirect('./home');
-    res.render('home',{name : req.cookies.user, lv: req.cookies.userLevel});
+
+    // var attachedSockID = req.cookies.attachedSockID;
+    
+    var attachedSock = await Socket.findOne({userName: req.cookies.user, 
+        attached:true});
+    if (attachedSock) {
+      console.log(
+        req.cookies.user + " has attached socket: " + attachedSock.socketID
+      );
+    }
+    
+    var found = 0;
+    var mySocket = await Socket.find({userName: req.cookies.user});
+    // console.log(mySocket);
+    if (mySocket){
+        for (const socket of mySocket) {
+            // console.log(socket.socketID);
+        }
+    }
+    res.render('home',{name : req.cookies.user,
+        lv: req.cookies.userLevel, mySocket: mySocket,
+        haveSocket:found, attachedSock:attachedSock});
 });
-router.get('/lookup',verify,async (req,res)=>{
-    console.log('wants to lookup')
-    console.log("cookies's username: "+ req.cookies.user);
 
-const socID=await Sockett.find({
-    userName:req.cookies.user
-},{
-    socketID:1
+router.post('/attach',verify, async function(req, res){
+    if(req.cookies.attachedSockID){
+        var attachedSock = await Socket.findOneAndUpdate(
+            {userName: req.cookies.user, 
+            socketID : req.cookies.attachedSockID},
+            { $set: { "attached" : false}}
+            );
+        res.clearCookie('attachedSockID');
+    }
+    var socketID = req.body.atSock;
+    console.log(req.cookies.user+" attach socket: "+socketID);
+    var newSock = await Socket.findOneAndUpdate(
+        {userName: req.cookies.user, 
+        socketID : socketID},
+        { $set: { "attached" : true}},
+        function(err){
+            if (err)
+            console.log("notfound");
+        });
+    res.cookie('attachedSockID', socketID);
+    res.redirect('/');
 });
-//get the socketID of the current user's
-const ID=socID[0].socketID;
-//count how many datas of this ID is in dailyUsage.
-const countOfDataInDaily=await daily.find({
-    socketID: ID
-}).countDocuments();
-if(countOfDataInDaily>7){
-    countOfDataInDaily=7;
-}
-//search for the data in dailyusage, by ID
-const usageData=await daily.find({socketID: ID},{
-    year:1, month:1,day:1,totalUse:1, _id:0
-}).sort({year:-1,month:-1,day:-1}).limit(countOfDataInDaily);
-//put the data in array:
-var data=[];
-// for(var i=0;i<countOfDataInDaily;++i){
-//     var date=usageData[i].year.toString()+usageData[i].month.toString()+"/"+usageData[i].day.toString();
-//     var use=usageData[i].totalUse;
-//     data.push(usageData[i]);
-//     console.log(data[i]);
-// }
-for(var i=0;i<7;++i){
-    if(i<countOfDataInDaily){
-     var date=usageData[i].year.toString()+"/"+usageData[i].month.toString()+"/"+usageData[i].day.toString();
-         var use=parseInt(usageData[i].totalUse);
-data.push([date,use]);}
-else{
-    var x="/";
-    var y=null;
-    data.push([x.toString(),parseInt(y)]);
-}
-}
-console.log("date: " + data[0][0]); console.log("use: "+data[0][1]);
 
+router.post('/removeSocket',verify, async function(req, res){
+    var attachedSock = await Socket.findOneAndUpdate(
+        {userName: req.cookies.user, 
+        socketID : req.cookies.attachedSockID},
+        { $set: { "attached" : false}}
+        );
+    console.log(req.cookies.user+" remove attached socket: "+req.cookies.attachedSockID);
+    res.clearCookie('attachedSockID');
+    res.redirect('/');
+});
 
-
-    res.render('stats',{datas:data, loop:countOfDataInDaily});
-})
-
- 
 //save the data sent from Arduino
 app.get('/readings', function(req, res){
     //var line = req.params.id;
@@ -93,8 +101,14 @@ app.get('/readings', function(req, res){
     var name=q.name;
     var current=q.current;
     var id = q.id
-    
-    var json1 = new EnergyUse({socketID:id, current: current, switchOn :true});
+    var d = new Date();
+    var ymd = d.getFullYear.toString()+"/"+(d.getMonth()+1).toString()+d.getDate().toString();
+    var json1 = new EnergyUse({socketID:id, current: current, switchOn :true, 
+        YMD: ymd,
+        Hour: d.getHours(), 
+        Minute: d.getMinutes(),
+        dateTime: d
+    });
     
     json1.save(function(err){
         console.log('try');
@@ -105,7 +119,11 @@ app.get('/readings', function(req, res){
         
     });
     res.writeHead(200, {'Content-Type': 'text/html'});
-    res.end(id+" "+name+" has used "+current+"A already!"); 
+    res.send(id+" "+name+" has used "+current+"A already!"); 
+});
+
+router.get('/io',(req, res)=>{
+    res.render('io');
 });
 
 // app.get('/',function(request, response){
@@ -135,18 +153,18 @@ app.use(cookieParser());
 
 
 // ----------WebSocket-------
-app.ws('/echo', function(ws, req) {
-    ws.on('message', function(msg) {
-        ws.send(msg);
-    });
-});
+// app.ws('/echo', function(ws, req) {
+//     ws.on('message', function(msg) {
+//         ws.send(msg);
+//     });
+// });
 
-app.ws('/', function(ws, req) {
-    ws.on('message', function(msg) {
-        console.log(msg);
-    });
-    console.log('socket', req.testing);
-});
+// app.ws('/', function(ws, req) {
+//     ws.on('message', function(msg) {
+//         console.log(msg);
+//     });
+//     console.log('socket', req.testing);
+// });
 // --------WebSocket------------
 
 // Set Router
@@ -164,11 +182,22 @@ app.use('/styles',express.static(__dirname +'/styles'));
 
 app.use('/js',express.static(__dirname +'/js'));
 
-
-app.listen(5000,function(){
+const server = app.listen(5000,function(){
     console.log("start listening at port 5000");
 });
 
+var io = require('socket.io')(server);
+require('./io.js')(io);
+
+// io.on('connection', (socket) => {
+//     console.log('a user connected');
+
+//     socket.on('test', (data) => {
+//         var string = data;
+//       console.log(string);
+//     });
+
+//   });
 
 // router.get('/home', verify, (req,res)=>{
     
