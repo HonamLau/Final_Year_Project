@@ -145,6 +145,7 @@ router.post('/register', async (req,res) => {
 router.get('/logout', (req,res) =>{
     res.clearCookie('user');
     res.clearCookie('authToken');
+    res.clearCookie('attachedSockID');
     res.redirect('login');
 });
 router.get('/register',(req,res)=>{

@@ -5,10 +5,12 @@ var socketSchema = new mongoose.Schema({
         type: String
     }, 
     minCurrent : {
-        type: Number
+        type: Number,
+        default:0
     },
     maxCurrent : {
-        type: Number
+        type: Number,
+        default:100
     },
     userName:{
         type:String
@@ -19,6 +21,10 @@ var socketSchema = new mongoose.Schema({
     },
     MAC:{
         type:String
+    },
+    powerOn:{
+        type: Boolean,
+        default:false
     }
 });
 

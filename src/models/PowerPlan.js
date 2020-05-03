@@ -11,13 +11,16 @@ var planSchema = new mongoose.Schema({
         type: Number
     },
     socketID: {
+        type: String
+    },
+    Hour : {
         type: Number
     },
-    scheduleOn : {
+    Minute : {
         type: Number
     },
-    scheduleOff : {
-        type: Number
+    timeOfNow:{
+        type: Date
     },
     minCurrent: {
         type: Number

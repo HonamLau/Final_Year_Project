@@ -1,0 +1,206 @@
+#attachSocket :hover {
+  color: rgb(83, 222, 244);
+}
+#anchorList {
+  padding: 0px 10px;
+}
+
+#anchorList ul {
+  list-style-type: none;
+  padding: 0;
+  width: 100%;
+}
+#anchorList ul li {
+  display: block;
+}
+#anchorList ul a {
+  font-size: 1.3rem;
+  padding: 0 1rem;
+  display: block;
+  /* border: blue 1px solid; */
+  border: lightgray 2px solid;
+  border-radius: 5px;
+  width: 100%;
+  height: 100%;
+}
+#anchorList ul a:hover {
+  color: white;
+  background-color: lightgray;
+  transition: 0.3s ease;
+}
+#anchorList ul a.selected {
+  border: green 2px solid;
+  color: green;
+  background-color: white;
+}
+#socket {
+  width: 25vw;
+  height: 25vw;
+  min-width: 250px;
+  min-height: 250px;
+  margin: 1rem auto;
+  border: 4px solid lightgray;
+  /* border-color:  transparent green transparent green; */
+  /* border-radius: 50%; */
+  border-radius: 100%;
+  /* box-shadow: none; */
+  /* animation: spin 10s infinite ease-in-out; */
+  /* animation: circle 8s infinite linear; */
+  /* position: absolute; */
+}
+
+#attached {
+  border: rgb(53, 192, 214) 5px solid;
+  background-color: white;
+  border-radius: 5px;
+  height: 470px;
+  display: none;
+}
+
+@keyframes spin {
+  0% {
+    border-color: rgb(53, 192, 214) green green green;
+  }
+  25% {
+    border-color: green rgb(53, 192, 214) green green;
+  }
+  75% {
+    border-color: green green rgb(53, 192, 214) green;
+  }
+  100%{
+        border-color:   green green green rgb(53, 192, 214);
+      }
+}
+@keyframes circle {
+    0% {
+      border-color: green green green green;
+    }
+    10%{
+        border-right-color:green;
+    }
+    15% {
+        /* border-top-color: #0eb7da; */
+        border-top-color: lightgray;
+    }
+    20%{
+        border-bottom-color: green;
+    }
+    25%{
+        /* border-right-color: #0eb7da; */
+        border-right-color: lightgray;
+    }
+    30%{
+        border-left-color: green;
+    }
+    35%{
+        /* border-bottom-color: #0eb7da; */
+        border-bottom-color: lightgray;
+    }
+    45%{
+        /* border-left-color: #0eb7da; */
+        border-left-color: lightgray;
+    }
+    50%{
+        /* border-top-color: #0eb7da; */
+        border-top-color: lightgray;
+    }
+    60%{
+        /* border-right-color: #0eb7da; */
+        border-right-color: lightgray;
+    }
+    65%{
+        border-top-color: green ;
+    }
+    70%{
+        /* border-bottom-color:#0eb7da; */
+        border-bottom-color: lightgray;
+    }
+    75%{
+        border-right-color: green ;
+    }
+    80%{
+        /* border-left-color: #0eb7da; */
+        border-left-color: lightgray;
+    }
+    85%{
+        border-bottom-color: green ;
+    }
+    95%{
+        border-left-color: green ;
+    }
+    100%{
+        border-color:  green;
+        }
+  }
+
+.modal-body {
+  max-height: 450px;
+  overflow-y: scroll;
+}
+
+.socket-current {
+  /* border: greenyellow 1px solid; */
+  width: 80%;
+  margin: 15% 10% 0px 10%;
+  padding: 0;
+  font-weight: bold;
+}
+
+#attached button {
+  margin-top: 20px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 100px;
+  height: 45px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 39px;
+  width: 39px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+input[type="checkbox"]:checked + .slider {
+  background-color: lightgreen;
+}
+
+input[type="checkbox"]:focus + .slider {
+  box-shadow: 0 0 1px lightgreen;
+}
+
+input[type="checkbox"]:checked + .slider:before {
+  -webkit-transform: translateX(55px);
+  -ms-transform: translateX(55px);
+  transform: translateX(55px);
+}
+
+.socket-switch {
+  margin-top: 10px;
+}
+

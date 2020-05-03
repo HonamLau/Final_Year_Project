@@ -28,6 +28,62 @@
       .row > button {
         margin: 1vh 5vw;
       }
+      #modal-MAC{
+        border-radius: 5px;
+        background-color: lightgray;
+        text-align: center;
+      }
+      .form-group{
+        width: 100%;
+        /* border: lightgreen 1px solid; */
+        text-align: left;
+        padding: 0px 20px;
+        /* text-align: center; */
+      }
+      .form-control{
+        text-align: center;
+      }
+      select{
+        text-align-last: center;
+      }
+
+      #noSocket{
+        /* margin: 30px 0px; */
+        /* padding: 30px; */
+        /* border: blue 1px solid; */
+        /* background-color: gray; */
+        color: rgb(53, 192, 214);
+        
+      }
+
+      .lds-dual-ring {
+        /* padding-top: 30px; */
+        display: inline-block;
+        width: 116px;
+        height: 116px;
+      }
+      .lds-dual-ring:after {
+        content: " ";
+        display: block;
+        width: 100px;
+        height: 100px;
+        margin: 8px;
+        border-radius: 50%;
+        border: 6px solid rgb(53, 192, 214);
+        border-color: rgb(53, 192, 214) transparent rgb(53, 192, 214) transparent;
+        animation: lds-dual-ring 1.2s linear infinite;
+      }
+      @keyframes lds-dual-ring {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .btn-success:disabled{
+        opacity: 0.3;
+      }
     </style>
 
     <link href="../styles/style.css" rel="stylesheet" type="text/css" />
@@ -96,38 +152,33 @@
               </li>
             </ul>
           </li>
-
+          <% if (locals.lv>=5) { %>
           <li class="nav-item">
-            <a
-              href="#officeSetting"
-              data-toggle="collapse"
-              aria-expanded="false"
-              class="nav-link"
-            >
+            <a href="#officeSetting" data-toggle="collapse" aria-expanded="false" class="nav-link">
               <i class="fa fa-group"></i>Office
             </a>
+          
             <ul class="collapse list-unstyled" id="officeSetting">
               <li class="nav-item">
                 <a class="nav-link" href="">
                   <i class="fa fa-plus"></i>Add New Socket
                 </a>
               </li>
-
-              <% if (locals.lv>=5) { %>
+          
+          
               <li class="nav-item">
                 <a class="nav-link" href="officeManage">
-                  <i class="fa fa-eye"></i>Manage Office Environment</a
-                >
+                  <i class="fa fa-eye"></i>Manage Office Environment</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="assignToSocket">
-                  <i class="fa fa-eye"></i>Socket Management</a
-                >
+                  <i class="fa fa-plug"></i>Socket Management</a>
               </li>
-              <% } %>
+          
             </ul>
+          
           </li>
-
+          <% } %>
           <% if (locals.lv>=10) { %>
           <li class="nav-item">
             <a
@@ -187,22 +238,89 @@
             <option value="watermelon">Watermelon</option>
           </select> -->
           <div class="waitingSockList">
-            <div id="noSocket" style="display: none;">
+
+            <% if (locals.success) { %>
+              <div class="alert alert-success">
+                  <strong>Successful! </strong> <%= success%> !  
+              </div>
+            <%}%>
+          
+            <% if (locals.error) { %>
+                <div class="alert alert-danger">
+                    <strong>Error! </strong> <%= error%>  
+                </div>
+            <%}%>
+
+            <div id="noSocket" style="display: block;">
               <h1>No socket is waiting to match</h1>
+              <!-- <div class="lds-dual-ring"></div> -->
             </div>
-            <ul id="waitingList">
-            </ul>
+            
+            <div>
+              <ul id="waitingList">
+
+              </ul>
+            </div>
+
+            <div id="radio-List" style="display: none;">
+
+            </div>
+            <div class="lds-dual-ring"></div>
+            
           </div>
         </div>
       </div>
       <div class="row justify-content-center">
-        <button type="submit" class="btn btn-lg btn-primary">
+        <button type="button" id="refresh" class="btn btn-lg btn-primary">
           <i class="fa fa-refresh" style="margin-right: 5px;"></i>Refresh
         </button>
-        <button type="submit" class="btn btn-lg btn-success">
+        <button id="addButton" type="button" data-toggle="modal" data-target="#addSockModal" class="btn btn-lg btn-success" disabled>
           <i class="fa fa-plus" style="margin-right: 5px;"></i>Add Device
-        </button>
+        </button> 
       </div>
+
+      <div id="addSockModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">    
+              <h1 class="modal-title">Add a Device</h1>
+            </div>
+            <form id="addDeviceToServer" name="addSocket" method="post" action="addSocket">
+              <div class="modal-body">
+                <div class="row" id="addSockDialog">
+                  <!-- <div class="row"> -->
+                    <div class="form-group">
+                      <label for="modal-MAC" >MAC Address: </label>
+                      <input id="modal-MAC" name="MAC" type="text" class="form-control">
+                    </div>  
+                  <!-- </div> -->
+                    <div class="form-group">
+                      <label for="socket-ID" >Socket ID: </label>
+                      <input id="socket-ID" name="socketID" type="text" class="form-control">
+                    </div> 
+
+                  <!-- <div class="row"> -->
+                    <div class="form-group">
+                      <label for="userSelect" >Add To User: </label>
+                      <select id="userSelect"  name="userName" class="form-control">
+                        <option>-none-</option>
+                        <option>phsze2</option>
+                        <option value="admin123">admin123</option>
+                      </select>
+                    </div>
+                  <!-- </div> -->
+
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" id="close" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" id="submit" class="btn btn-success">Add Device</button>
+              </div>
+          </form>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <script>
@@ -210,6 +328,7 @@
       //     console.log($("#user-management-user").prop("checked"));
       // });
       var waitList = JSON.parse('<%-JSON.stringify(waitList)%>');
+    
     </script>
 
     <script
@@ -231,6 +350,14 @@
     <script src="../js/waitListSock.js"></script>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script></script>
+    <script>
+    $(document).ready(function(){
+        console.log("ready");
+        $("#refresh").on("click", function(){
+          console.log("refresh");
+          location.reload();
+        });
+      });
+    </script>
   </body>
 </html>

@@ -9,6 +9,7 @@ const Socket = require('./models/Socket');
 const Users = require('./models/Users');
 const url = require('url');
 const mongoose = require('mongoose');
+const EnUse = require('./models/EnergyUse');
 
 const router = express.Router();
 const dotenv = require('dotenv');
@@ -20,8 +21,10 @@ const daily=require('./models/dailyUsage');
 const verifyAdmin = require('./routes/verifyAdmin');
 const models = db.models;
 // var Socket =  models.Socket; 
-var EnergyUse =  models.EnergyUse; 
+// var EnergyUse =  models.EnergyUse; 
+const PowerPlan = require('./models/PowerPlan');
 // var users = models.Users;
+const WaitingSock = require('./models/WaitingSock');
 
 // Get Router
 const authRouter = require('./routes/auth');
@@ -29,6 +32,8 @@ const powerRouter = require('./routes/powerUse');
 const adminRouter = require('./routes/adminSetting');
 const officeRouter = require('./routes/office');
 const planRouter = require('./routes/powerPlan');
+const schedule = require('node-schedule');
+
 
 dotenv.config({path:'./src/.env'});
 
@@ -37,13 +42,21 @@ router.get('/',loginRedirect, async function(req, res){
     // res.redirect('./home');
 
     // var attachedSockID = req.cookies.attachedSockID;
-    
+    res.clearCookie('attachedSockID');
     var attachedSock = await Socket.findOne({userName: req.cookies.user, 
         attached:true});
+    var plan;
     if (attachedSock) {
       console.log(
         req.cookies.user + " has attached socket: " + attachedSock.socketID
       );
+      res.cookie('attachedSockID', attachedSock.socketID);
+
+      plan = await PowerPlan.findOne({socketID: attachedSock.socketID});
+      if (plan){
+
+      }
+      console.log(plan);
     }
     
     var found = 0;
@@ -54,22 +67,26 @@ router.get('/',loginRedirect, async function(req, res){
             // console.log(socket.socketID);
         }
     }
+    console.log("user level of "+req.cookies.user+" is "+req.cookies.userLevel)
+    console.log("attached to"+attachedSock);
     res.render('home',{name : req.cookies.user,
         lv: req.cookies.userLevel, mySocket: mySocket,
-        haveSocket:found, attachedSock:attachedSock});
+        haveSocket:found, attachedSock:attachedSock,
+        powerPlan:plan});
+
 });
 
 router.post('/attach',verify, async function(req, res){
-    if(req.cookies.attachedSockID){
+    // if(req.cookies.attachedSockID){
         var attachedSock = await Socket.findOneAndUpdate(
             {userName: req.cookies.user, 
-            socketID : req.cookies.attachedSockID},
+            socketID : req.cookies.attachedSockID,
+            attached : true},
             { $set: { "attached" : false}}
             );
         res.clearCookie('attachedSockID');
-    }
+    // }
     var socketID = req.body.atSock;
-    console.log(req.cookies.user+" attach socket: "+socketID);
     var newSock = await Socket.findOneAndUpdate(
         {userName: req.cookies.user, 
         socketID : socketID},
@@ -78,53 +95,80 @@ router.post('/attach',verify, async function(req, res){
             if (err)
             console.log("notfound");
         });
-    res.cookie('attachedSockID', socketID);
+        if (newSock){
+            console.log(req.cookies.user+" attach socket: "+socketID);
+            res.cookie('attachedSockID', newSock.socketID);
+        }
+    // res.cookie('attachedSockID', socketID);
     res.redirect('/');
 });
+
 
 router.post('/removeSocket',verify, async function(req, res){
     var attachedSock = await Socket.findOneAndUpdate(
         {userName: req.cookies.user, 
-        socketID : req.cookies.attachedSockID},
-        { $set: { "attached" : false}}
+        socketID : req.cookies.attachedSockID,
+        attached : true},
+        { $set: { attached : false}}
         );
-    console.log(req.cookies.user+" remove attached socket: "+req.cookies.attachedSockID);
+        if(attachedSock){
+            console.log(attachedSock);
+            console.log(req.cookies.user+" remove attached socket: "+req.cookies.attachedSockID);
+        }
     res.clearCookie('attachedSockID');
     res.redirect('/');
 });
 
 //save the data sent from Arduino
-app.get('/readings', function(req, res){
+app.get('/read', async function(req, res){
     //var line = req.params.id;
     //console.log(line);
     var q=url.parse(req.url,true).query; //req.url = the full link to the website
-    var name=q.name;
     var current=q.current;
-    var id = q.id
-    var d = new Date();
-    var ymd = d.getFullYear.toString()+"/"+(d.getMonth()+1).toString()+d.getDate().toString();
-    var json1 = new EnergyUse({socketID:id, current: current, switchOn :true, 
-        YMD: ymd,
-        Hour: d.getHours(), 
-        Minute: d.getMinutes(),
-        dateTime: d
-    });
-    
-    json1.save(function(err){
-        console.log('try');
-        if(err)
-        console.log('cant insert');
-        else
-        console.log('data inserted');
+    var id = q.id.toString();
+    var result = await Socket.find({"socketID": id},{powerOn: 1, _id: 0});
+    var OnOff=true;
+
+    if(result.powerOn==false){
+    current = 0;
+    OnOff = false}
+    var inTable = Socket.find({socketID: id}).countDocuments();
+    if(inTable<1){
+        res.send("OFF");
+        return;
+    }
+    else{
+        var inTable2 = Socket.find({socketID: id});
+        //undefined-> never been assigned a user.
+        //""/null->has been assigned user but now removed.
+        if(inTable2[0].userName==undefined||inTable2[0].userName==""||inTable2[0].userName==null){
+            res.send("OFF");
+            return;
+        }
         
-    });
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.send(id+" "+name+" has used "+current+"A already!"); 
+    }
+    var d = new Date();
+    var ymd = d.getFullYear().toString()+"/"+(d.getMonth()+1).toString()+"/"+d.getDate().toString();
+    await EnUse.insertMany([{"YMD":ymd,"Hour":d.getHours(),"Minute": d.getMinutes(),"dateTIme": d,
+                             "socketID":id, "current":current, "switchOn": OnOff
+
+}]);
+ 
+
+    if(result.powerOn==false)
+    res.send("OFF");
+
+    else
+    res.send("ON"); 
+
+    
 });
 
-router.get('/io',(req, res)=>{
-    res.render('io');
-});
+
+
+
+
+
 
 // app.get('/',function(request, response){
 //     response.sendFile(path.join(__dirname,'../','public','index.html'))
@@ -182,28 +226,192 @@ app.use('/styles',express.static(__dirname +'/styles'));
 
 app.use('/js',express.static(__dirname +'/js'));
 
-const server = app.listen(5000,function(){
+const server = app.listen(5000, async function(){
     console.log("start listening at port 5000");
+    try{
+        await WaitingSock.remove();
+        console.log("clear waitlist");
+    }
+    catch(e){
+        console.log("waitlist error ", e);
+    }
 });
 
 var io = require('socket.io')(server);
 require('./io.js')(io);
 
-// io.on('connection', (socket) => {
-//     console.log('a user connected');
+router.get('/testio',async function(req, res){
+    io.emit("testing", "testing");
+});
 
-//     socket.on('test', (data) => {
-//         var string = data;
-//       console.log(string);
-//     });
+var socketClient = require('socket.io-client')('http://143.89.130.87:5000/IOT');
 
-//   });
+// <----------Server match arduino----------
+app.get('/matching', async function(req, res){
+    console.log("matching");
+    var q=url.parse(req.url,true).query;
+    console.log("matching query: ", q);
+    var MAC = q.mac.toString();
+    console.log("matching Mac: ", MAC);
+    var waitingSock;
+    var socket = await Socket.findOne({
+        MAC:MAC
+    });
+    if(socket){
+        res.send("matched");
+    }else{
+        console.log("find in waitlist");
+        waitingSock = await WaitingSock.findOne({
+            MAC:MAC
+        });
+
+        if (waitingSock){
+            console.log("waitlist found");
+        }else{
+            console.log("emit to waitlist");
+            socketClient.emit("socketToServer",MAC);
+        }
+    }
+    
+
+});
+// ----------Server match arduino---------->
 
 // router.get('/home', verify, (req,res)=>{
     
     
 //     res.render('home',{name : req.cookies.user, lv: req.cookies.userLevel});
 // });
+
+router.get("/insertDailyForSocket", async function (req, res) {
+  var year = 2020,
+    month = 4,
+    day = 10,
+    use = 1000,
+    time = 9,
+    current = 15;
+  var q = url.parse(req.url, true).query; //req.url = the full link to the website
+  var id = parseInt(q.id);
+  for (var i = 0; i < 7; ++i) {
+    await daily.insertMany({
+      socketID: id,
+      year: year,
+      month: month,
+      day: day,
+      totalUse: use,
+    });
+    var m = month;
+    var d = new Date(year, m, day);
+    console.log("month = " + d.getMonth());
+    var ymd =
+      d.getFullYear().toString() +
+      "/" +
+      d.getMonth().toString() +
+      "/" +
+      d.getDate().toString();
+    await EnUse.insertMany({
+      socketID: id,
+      YMD: ymd,
+      Hour: time,
+      dateTime: d,
+      current: current,
+      switchOn: true,
+    });
+
+    if (i % 2 == 1) {
+      use = 2000;
+      time = 12;
+      current = 18;
+    } else {
+      use = 1000;
+      time = 9;
+      current = 15;
+    }
+    day = day + 1;
+  }
+  res.send("insert finished");
+});
+
+router.get('/insertDailyPart2', async function (req, res) {
+    var year = 2020, month = 4, day = 1, use = 1000, time = 9, current = 15;
+    var q = url.parse(req.url, true).query; //req.url = the full link to the website
+    var id = parseInt(q.id);
+    for (var i = 0; i < 9; ++i) {
+        await daily.insertMany({ socketID: id, year: year, month: month, day: day, totalUse: use });
+        var m = month;
+        var d = new Date(year, m, day);
+        console.log("month = " + d.getMonth())
+        var ymd = d.getFullYear().toString() + "/" + d.getMonth().toString() + "/" + d.getDate().toString();
+        await EnUse.insertMany({ socketID: id, YMD: ymd, Hour: time, dateTime: d, current: current, switchOn: true });
+
+        if (i % 2 == 1) {
+            use = 2000;
+            time = 12;
+            current = 18;
+        }
+        else {
+            use = 1000;
+            time = 9;
+            current = 15;
+        }
+        day = day + 1;
+    }
+    res.send("insert finished")
+
+});
+
+router.get('/insertDailyPart3', async function (req, res) {
+    var year = 2020, month = 3, day = 16, use = 1000, time = 9, current = 15;
+    var q = url.parse(req.url, true).query; //req.url = the full link to the website
+    var id = parseInt(q.id);
+    for (var i = 0; i < 16; ++i) {
+        await daily.insertMany({ socketID: id, year: year, month: month, day: day, totalUse: use });
+        var m = month;
+        var d = new Date(year, m, day);
+        console.log("month = " + d.getMonth())
+        var ymd = d.getFullYear().toString() + "/" + d.getMonth().toString() + "/" + d.getDate().toString();
+        await EnUse.insertMany({ socketID: id, YMD: ymd, Hour: time, dateTime: d, current: current, switchOn: true });
+
+        if (i % 2 == 1) {
+            use = 2000;
+            time = 12;
+            current = 18;
+        }
+        else {
+            use = 1000;
+            time = 9;
+            current = 15;
+        }
+        day = day + 1;
+    }
+    res.send("insert finished")
+});
+// router.get('/temp', async function(req,res){
+//     var q=url.parse(req.url,true).query;
+//     var id=(q.id).toString();
+//     var d1 = new Date(2020,3,10);    var d2 = new Date(2020,3,11);    var d3 = new Date(2020,3,12);    var d4 = new Date(2020,3,13);
+//     var ymd1 = "2020/4/10"; var ymd2 = "2020/4/11";var ymd3 = "2020/4/12";var ymd4 = "2020/4/13";
+//     await daily.insertMany({socketID: id, year: 2020, month:4, day:10,totalUse: 1000});
+//     await daily.insertMany({socketID: id, year: 2020, month:4, day:11,totalUse: 1200})
+//     await daily.insertMany({socketID: id, year: 2020, month:4, day:12,totalUse: 1100});
+//     await daily.insertMany({socketID: id, year: 2020, month:4, day:13,totalUse: 1250});
+
+
+//     await EnUse.insertMany({socketID: id, dateTime: d1, YMD: ymd1, Hour: 9,current: 15});
+//     await EnUse.insertMany({socketID: id, dateTime: d2, YMD: ymd2, Hour:10,current:18});
+//     await EnUse.insertMany({socketID: id, dateTime: d3, YMD: ymd3, Hour:12,current:16});
+//     await EnUse.insertMany({socketID: id, dateTime: d4, YMD: ymd4, Hour:10,current:18});
+
+//     res.send("inserted")
+// })
+
+router.get('/schedule', async function(req,res){
+var d = new Date(2020,4,2,11,3);//month =4 means May
+var j = schedule.scheduleJob(d, function(){
+    console.log('現在時間：',new Date());
+    })
+    res.send("schedule completed");
+});
 
 
 

@@ -74,12 +74,13 @@
 
               </ul>
           </li>
-
+          <% if (locals.lv>=5) { %>
           <li class="nav-item">
 
             <a href="#officeSetting" data-toggle="collapse" aria-expanded="false" class="nav-link">
               <i class="fa fa-group"></i>Office
             </a>
+           
                   <ul class="collapse list-unstyled" id="officeSetting">
                   
                     <li class="nav-item"> 
@@ -88,19 +89,20 @@
                       </a>
                     </li>
                     
-                    <% if (locals.lv>=5) { %>
+                    
                       <li class="nav-item"> 
                         <a class="nav-link" href="../../office/officeManage">
                           <i class="fa fa-eye"></i>Manage Office Environment</a>
                       </li>
                       <li class="nav-item"> 
                         <a class="nav-link" href="../../office/assignToSocket">
-                          <i class="fa fa-eye"></i>Socket Management</a>
+                          <i class="fa fa-plug"></i>Socket Management</a>
                       </li>
-                    <% } %>
+                   
                   </ul>
+                 
           </li>
-          
+          <% } %>
           <% if (locals.lv>=10) { %>
           <li class="nav-item"> 
             <a href="#adminSetting" data-toggle="collapse" aria-expanded="false" class="nav-link">

@@ -42,14 +42,9 @@ void setup() {
 }
 
 void loop() {
-<<<<<<< HEAD
   Serial.print("Hello");
   //Serial.print("Hellohihi");
   WebClientRead();
-=======
-  //Serial.print("Hello");
-  Serial.print("Hellohihi");
->>>>>>> 616bb22f987896165f0adc5b09f648a890f4c2b5
   delay(5000);
 
 }

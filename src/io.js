@@ -1,5 +1,7 @@
 var Socket = require("./models/Socket");
 var WaitingSock = require("./models/WaitingSock");
+var num;
+var timeout;
 
 module.exports = function (io) {
   io.on("connection", (socket) => {
@@ -9,6 +11,8 @@ module.exports = function (io) {
       var string = data;
       console.log(string);
     });
+
+    // socket.on("arduino"), (data)
   });
 
   io.of("/chat").on("connection", (socket) => {
@@ -24,6 +28,7 @@ module.exports = function (io) {
 
   var IOT = io.of("/IOT");
   IOT.on("connection", (socket) => {
+    console.log("IOT connection");
     // socket match to server
     socket.on("socketToServer", async (MAC, data) => {
       console.log("MAC: ", MAC);
@@ -31,7 +36,7 @@ module.exports = function (io) {
       console.log("id: ", socket.id);
       var matchedSock = await Socket.findOne({ MAC: MAC });
       if (matchedSock) {
-        socket.emit("socketToServer", true);
+        // socket.emit("socketToServer", true);
         console.log(matchedSock);
       } else {
         // register into temp table?
@@ -61,7 +66,7 @@ module.exports = function (io) {
 
     // socket disconnect
     socket.on("disconnect", async (reason) => {
-      console.log("disconnect socket");
+      // console.log("disconnect socket");
       var waiting = await WaitingSock.findOneAndDelete({
         socketID: socket.id,
       });
@@ -73,6 +78,36 @@ module.exports = function (io) {
     });
     // socket disconnect -------->
 
-    socket.on("/realtime", () => {});
+    socket.on("realtime", async (data) => {
+      num = data;
+      // setTimeout(sendSignal(num),1000);
+      console.log("signal fire ",data);
+      setInterval(()=> sendSignal(num),3000);
+      
+    });
+
+    socket.on("powerOnOff", async(data) =>{
+      console.log("poweronoff");
+      var socket = await Socket.findOneAndUpdate({
+        socketID: data.socketID,
+        userName: data.userName
+      },
+      { $set: { "powerOn" : data.powerOn}});
+
+      if (socket){
+        console.log("success on off");
+      }else{
+        console.log("fail on off");
+      }
+
+    });
+
+
+    function sendSignal(data) {
+      num = data == 1 ? 0 : 1;
+      // console.log('data to ', data, typeof(data));
+      IOT.emit("sendSignal", num);
+      
+    }
   });
 };

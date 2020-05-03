@@ -71,12 +71,13 @@
 
             </ul>
         </li>
-
+        <% if (locals.lv>=5) { %>
         <li class="nav-item">
 
           <a href="#officeSetting" data-toggle="collapse" aria-expanded="false" class="nav-link">
             <i class="fa fa-group"></i>Office
           </a>
+                
                 <ul class="collapse list-unstyled" id="officeSetting">
                 
                   <li class="nav-item"> 
@@ -85,19 +86,20 @@
                     </a>
                   </li>
                   
-                  <% if (locals.lv>=5) { %>
+                  
                     <li class="nav-item"> 
                       <a class="nav-link" href="officeManage">
                         <i class="fa fa-eye"></i>Manage Office Environment</a>
                     </li>
                     <li class="nav-item"> 
                       <a class="nav-link" href="">
-                        <i class="fa fa-eye"></i>Socket Management</a>
+                        <i class="fa fa-plug"></i>Socket Management</a>
                     </li>
-                  <% } %>
+                  
                 </ul>
+               
         </li>
-        
+        <% } %>
         <% if (locals.lv>=10) { %>
         <li class="nav-item"> 
           <a href="#adminSetting" data-toggle="collapse" aria-expanded="false" class="nav-link">
@@ -160,13 +162,13 @@
         <form>  
           <div class="form-group">
             <label for="plans">Please First Select the User to be Removed: </label>
-            <select class="form-control" id="userBeingRemoved">
+            <select class="form-control" id="userBeingRemoved" onchange="ff()">
             </select>
           </div>
           <div class="form-group">
-            <label for="socketIdfixed">Socket ID: </label>
-            <select disabled="true" class="form-control" id="socketIdfixed">
-             <option id="onlyOption" selected=true></option>
+            <label for="nothing">Socket ID: </label>
+            <select class="form-control" id="socketIdfixed">
+             
             </select>
                     </div>
           <div class="form-group">
@@ -175,6 +177,22 @@
             <input  class="btn btn-block btn-danger" type="button" id="remove" value="remove">
           </div>
         </form>
+
+        <form>  
+          <div class="form-group">
+            <label for="disconnect">Disconnect Socket from system </label>
+            <select class="form-control" id="disconnect">
+              
+             <!-- <option id="onlyOption"></option> -->
+            </select>
+                    </div>
+          <div class="form-group">
+            <!-- <input type="submit" class="btn btn-block btn-success" value="Submit" onclick="myfunc()"> -->
+            <!-- <button id="submitt">Confirm</button> -->
+            <input  class="btn btn-block btn-secondary" type="button" id="disconnectButton" value="Disconnect">
+          </div>
+        </form>
+
       </div>
     </div>
   </div>
@@ -207,15 +225,11 @@ for(var i=0;i<iterations1;++i){
     }
 </script>
 <script>
-var fullDatas = "<%= fullDatas %>"; //list of array of the users and socket Id data, which the sockets have people registered
-var array3 = fullDatas.split(",");
-var iterations3 = parseInt("<%= iteration3 %>");//full data length
+
 var halfDatas = "<%= halfDatas %>";
 var array4 = halfDatas.split(",");
 var iterations4 = parseInt("<%= iteration4 %>");//halfData length
 var x = document.getElementById("userBeingRemoved");
-var y = document.getElementById("onlyOption");
-
 for(var i=0;i<iterations4;++i){
   var option = document.createElement("option");
   option.value = option.text = array4[i];
@@ -223,22 +237,26 @@ for(var i=0;i<iterations4;++i){
   console.log(array4[i]);
 }
 
-//x.onChange = function(){
-  var temp = x.value;
-  var index = array3.indexOf(temp);
-  index-=1;
-  console.log("socket ID for this person is "+array3[index]);
-  y.value = y.text = array3[index];
-//}
-
-x.onchange = function(){
-
-  temp = x.value;
-  index = array3.indexOf(temp);
-  index-=1;
-  y.value = y.text = array3[index];
+</script>
+<script>
+  function ff(){
+    console.log("ff-ing");
+var fullDatas = "<%= fullDatas %>"; //list of array of the users and socket Id data, which the sockets have people registered
+var array3 = fullDatas.split(",");
+var iterations3 = parseInt("<%= iteration3 %>");//full data length
+var x = document.getElementById("userBeingRemoved");
+var y = document.getElementById("socketIdfixed");
+for(var i=0;i<y.length;++i){
+  y.remove(i);
 }
-
+for(var i=0;i<array3.length;++i){
+if(array3[i]==x.value){
+  var option = document.createElement("option");
+  option.text = option.value = array3[i-1];
+  y.add(option);
+}
+}
+  }
 </script>
 <script>
 document.getElementById("remove").onclick = function(){
@@ -249,6 +267,7 @@ var sId = q2.options[q2.selectedIndex].value;
 location.href = "removeFromSocket"+"?UN="+UN+"&sId="+sId;
 
 }
+  
 </script>
 <script>
   document.getElementById("assign").onclick = function(){
@@ -260,6 +279,26 @@ location.href = "removeFromSocket"+"?UN="+UN+"&sId="+sId;
   console.log(UN);
   
   location.href = "assignSocket"+"?UN="+UN+"&sId="+sId;
+
+}
+</script>
+<script>
+var d = document.getElementById("disconnect");
+var CanDisconnect = "<%= socketDatas %>".split(","); //socket ids with no owner
+for(var i=0;i<CanDisconnect.length;++i){
+  var option = document.createElement("option");
+  option.text = option.value = CanDisconnect[i]
+  d.add(option);
+}
+
+</script>
+<script>
+document.getElementById("disconnectButton").onclick = function(){
+var q1 = document.getElementById("disconnect");
+var sId = q1.options[q1.selectedIndex].value;
+console.log("you have chosen id:"+sId+" to disconnect")
+location.href = "disconnectSocket"+"?sId="+sId;
+
 
 }
 </script>

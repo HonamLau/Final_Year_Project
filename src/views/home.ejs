@@ -15,54 +15,24 @@
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <!-- <script src="https://kit.fontawesome.com/yourcode.js"></script> -->
+
+    <script src = "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Office-Home</title>
     <link href="../styles/style.css" rel="stylesheet" type="text/css"/>
+    <link href="../styles/homeCss.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
 
     <style>
     body {background-color: rgb(233, 233, 210);}
-    #attachSocket :hover{
-      color : rgb(83, 222, 244);
-    }
-    
-    #anchorList ul {
-      list-style-type: none;
-      padding: 0;
-      width: 100%;
-    }
-    #anchorList ul li{
-      display:block;
-      
-    }
-    #anchorList ul a{
-      font-size: 1.3rem;
-      padding: 0 1rem;
-      display:block;
-      /* border: blue 1px solid; */
-      border: lightgray 2px solid;
+    h4{
+      font-size: 18px;
+      display: inline-block;
+      background-color: #D4EDDA;
+      padding: 2px 5px;
+      color:#155724;
+      border: #B4CDBA 1px solid;
       border-radius: 5px;
-      width: 100%;
-      height: 100%;
-    }
-    #anchorList ul a:hover{
-      color: white;
-      background-color: lightgray;
-      transition: 0.3s ease;
-    }
-    #anchorList ul a.selected{
-      border: green 2px solid;
-      color: green;
-      background-color: white;
-    }
-    #socket{
-      width: 25vw;
-      height: 25vw;
-      min-width: 250px;
-      min-height: 250px;
-      margin: 1rem auto;
-      border: red 3px solid;
-      border-radius: 50%;
     }
 
     </style>
@@ -125,12 +95,13 @@
 
                 </ul>
             </li>
-
+            <% if (locals.lv>=5) { %>
             <li class="nav-item">
 
               <a href="#officeSetting" data-toggle="collapse" aria-expanded="false" class="nav-link">
                 <i class="fa fa-group"></i>Office
               </a>
+                    
                     <ul class="collapse list-unstyled" id="officeSetting">
                     
                       <li class="nav-item"> 
@@ -139,19 +110,20 @@
                         </a>
                       </li>
                       
-                      <% if (locals.lv>=5) { %>
+                      
                         <li class="nav-item"> 
                           <a class="nav-link" href="office/officeManage">
                             <i class="fa fa-eye"></i>Manage Office Environment</a>
                         </li>
                         <li class="nav-item"> 
                           <a class="nav-link" href="office/assignToSocket">
-                            <i class="fa fa-eye"></i>Socket Management</a>
+                            <i class="fa fa-plug"></i>Socket Management</a>
                         </li>
-                      <% } %>
+                      
                     </ul>
+                   
             </li>
-            
+            <% } %>
             <% if (locals.lv>=10) { %>
             <li class="nav-item"> 
               <a href="#adminSetting" data-toggle="collapse" aria-expanded="false" class="nav-link">
@@ -185,7 +157,7 @@
   
     <section>
         <!-- main content -->
-      <div class="main" style="margin-top: 100px;">
+      <div class="main">
         <div class="row justify-content-center">
           <div class="col">
             <h1 style="text-align: center;"><strong>Green Office Network</strong></h1>
@@ -194,36 +166,15 @@
           <div class="row justify-content-center">
             <div class="col">
               <h2 style="text-align: center;">Welcome Back! <%= name %></h2>
-              <!--<button onclick="window.location='143.89.130.87/auth/powerUsed/'" class="btn btn-block btn-info">
-                Power Used Today
-              </button><br>
-              <button onclick="window.location='lookup'" class="btn btn-block btn-primary"> 
-                Look up your power use statistics
-              </button><br>
-              <button id ='schedule' class="btn btn-block btn-secondary">
-                Schedule plans for your socket
-              </button><br>
-              <a href=""></a>
-              <a href=""></a>
-              <% if (locals.lv>=5) { %>
-              <button id='manage' class="btn btn-block btn-danger">
-                Manage Your Office Environment
-              </button>
-              <button id='assign' class="btn btn-block btn-info" onclick="window.location='assignToSocket'">
-                Assign/Delete Users to/from table and sockets
-              </button>
-              <br>
-              <% } %>
-              <% if (locals.lv>=10) { %>
-                
-                <button id='permission' class="btn btn-block btn-danger" onclick=" window.location='permissionManage'">
-                  Manage Users Permissions
-                </button>
-                <br>
-                <% } %>
-              <a href="/auth/logout" onclick="return confirm('sure?')">Log Out</a><br>  -->
             </div> 
-          </div>  
+          </div> 
+          <div class="row justify-content-center" style="display: none;">
+            <div class="col-lg-6" style="margin: 0 auto">
+              <h4 style="text-align: center;" id="planinfo" >
+                <i class="fa fa-exclamation-circle" style="margin: 0px 7px;"></i>Current Power Scheduling: 
+              </h4> 
+            </div> 
+          </div>   
           <div class="row justify-content-center">
             <div class="col-lg-6" id="attach" style="border:gray 5px dashed; background-color: white; border-radius: 5px; font-size: 5rem; color:gray; height: 400px;">
               <a class="nav-link" id="attachSocket" href="" data-toggle="modal" data-target="#attachModal" style="color: gray;">
@@ -231,11 +182,22 @@
                   <h2>Click to Attach a Socket</h2></i>
               </a> 
             </div>
-            <div class="col-lg-6" id="attached" style="border:green 5px solid; background-color: white; border-radius: 5px; height: 470px; display: none;">
-              <div id="socket"></div>
+            <div class="col-lg-6" id="attached">
+              <div id="socket">
+                <!-- <button class="spin circle"></button> -->
+                <div class="socket-info">
+                  <div class="socket-current"></div>
+                  <div class="socket-switch">
+                    <label class="switch">
+                      <input type="checkbox">
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
               <form id="removeSocket" name="removeFromHome" method="post" action="/removeSocket">
-                <button type="button" data-toggle="modal" data-target="#attachModal" class="btn btn-primary btn-lg mx-2" >Change Socket</button>
-                <button type="submit" class="btn btn-danger btn-lg mx-2" >Remove Socket</button>
+                <button type="button" data-toggle="modal" data-target="#attachModal" class="btn btn-primary btn-lg m-2" >Change Socket</button>
+                <button type="submit" class="btn btn-danger btn-lg m-2" >Remove Socket</button>
               </form>
             </div>
             <!-- <div class="col-lg-6 border border-danger">456</div> -->
@@ -247,7 +209,7 @@
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">    
-            <h1 class="modal-title">Attaching Socket</h1>
+            <h1 class="modal-title" style="color: green;">Attaching Socket</h1>
           </div>
           <form id="attachToHome" name="attachToHome" method="post" action="/attach">
             <div class="modal-body">
@@ -263,29 +225,19 @@
     </div>
     
     <script type="text/JavaScript">
-      // if(true)
-      //   document.getElementById("manage").style.display = "none";
-      // document.getElementById("schedule").onclick=function(){
-      //   location.href = "/powerPlan/userManage";
-      // };
-      
-      // document.getElementById("manage").onclick=function(){
-      //   location.href="/office/officeManage";
-      // };
-      
-      // document.getElementById("lookup").onclick=function(){
-      //   location.href="/powerUse/usage";
-      // }
-      // $(document).ready(function{
-        
-
-      // });
+  
     </script>
     <script>
       var name = "<%=name%>";
+      var lv = "<%=lv%>";
       var mySocket = JSON.parse('<%-JSON.stringify(mySocket)%>');
       var attachedSock = JSON.parse('<%-JSON.stringify(attachedSock)%>');
+      var powerPlan = JSON.parse('<%-JSON.stringify(powerPlan)%>');
       console.log(attachedSock);
+      console.log("powerplan  ", powerPlan);
+
+      $(document).ready(function(){
+      });
 
     </script>
     
@@ -299,15 +251,19 @@
       socket.emit('test', "test");
       socket.emit('test', "test2");
 
-
-      const chat = io.connect('/chat')
-        
-        chat.on('connect', () => {
-          chat.emit('hi!');
-        });
-        chat.on('a message', (data) => {
+      socket.on("testing", (data)=>{
           console.log(data);
-        });
+      })
+
+
+      // const chat = io.connect('/chat')
+        
+      //   chat.on('connect', () => {
+      //     chat.emit('hi!');
+      //   });
+      //   chat.on('a message', (data) => {
+      //     console.log(data);
+      //   });
 
     </script>
     <!-- socket.IO -->

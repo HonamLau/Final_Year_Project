@@ -2,9 +2,11 @@
     <head></head>
     <body>
         socket test
-        <input type="text">
+        <input id="input" type="text">
         <button type="button" id="connect">connect</button>
         <button type="button" id="disconnect" disabled>disconnect</button>
+        <button type="button" id="signal">signal</button>
+        <input id="onezero" type="text">
     </body>
     <script
       src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
@@ -23,26 +25,48 @@
     ></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
+      var socket;
+      const sock = io.connect('/IOT');
+      var num = 0;
         $(document).ready(function(){
+          $("#onezero").val(num);
             // var socket = io.connect('/IOT');
             // var socket = io.of('/IOT');
             // $("#disconnect").prop("disabled","true");
         });
         $("#connect").on("click", function(){
             console.log("click");
-            var socket = io.connect('/IOT');
-            socket.emit('socketToServer', 'MAC','data');
+            socket = io.connect('/IOT');
+            var inputMac = $("#input").val();
+            console.log(inputMac);
+            socket.emit('socketToServer', inputMac,'data');
             $("#connect").prop("disabled","true");
             $("#disconnect").prop("disabled","false");
             $("#disconnect").removeAttr("disabled");
         });
 
         $("#disconnect").on("click", function(){
+            console.log("disconnect");
             socket.disconnect();
             $("#disconnect").prop("disabled","true");
             $("#connect").prop("disabled","false");
             $("#connect").removeAttr("disabled");
         });
+        
+        $("#signal").on("click", function(){
+          console.log("emit ",num);
+          sock.emit('realtime', num);
+        });
+        // $(body).on("change", "input", function(){
+        //   $("onezero").val(data);
+        // });
+        // socket.on("connection", ()=>{
+          sock.on("sendSignal",(data) => {
+            console.log('signal come ', data);
+            num = data;
+            $("#onezero").val(num);
+          });
+        // });
         
     </script>
     

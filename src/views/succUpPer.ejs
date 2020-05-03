@@ -78,7 +78,7 @@
   
                   </ul>
               </li>
-  
+              <% if (locals.lv>=5) { %>
               <li class="nav-item">
   
                 <a href="#officeSetting" data-toggle="collapse" aria-expanded="false" class="nav-link">
@@ -92,18 +92,19 @@
                           </a>
                         </li>
                         
-                        <% if (locals.lv>=5) { %>
+                        
                           <li class="nav-item"> 
                             <a class="nav-link" href="../../office/officeManage">
                               <i class="fa fa-eye"></i>Manage Office Environment</a>
                           </li>
                           <li class="nav-item"> 
                             <a class="nav-link" href="../../office/assignToSocket">
-                              <i class="fa fa-eye"></i>Socket Management</a>
+                              <i class="fa fa-plug"></i>Socket Management</a>
                           </li>
-                        <% } %>
+                       
                       </ul>
               </li>
+              <% } %>
               
               <% if (locals.lv>=10) { %>
               <li class="nav-item"> 
@@ -144,7 +145,7 @@
     </div>
     <div class="row justify-content-center">
       <div class="col-md-6">
-        <button class="btn btn-block btn-primary" href="../../" id="goBack">back to home</button>
+        <button class="btn btn-block btn-primary" onclick="location.replace(document.referrer) " id="goBack">Go Back</button>
     </div>
     </div>
   </div>

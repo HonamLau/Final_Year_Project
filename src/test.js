@@ -4,6 +4,7 @@ const db = require('./models/db');
 const mongoose = require('mongoose');
 const model=db.models;
 const Users=model.Users;
+const expressWs = require('express-ws')(app);
 
 var user_name, pass_word,user_id,real_name,role_name,role_level;
 
@@ -11,10 +12,10 @@ var user_name, pass_word,user_id,real_name,role_name,role_level;
  app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended:false})); //enable to get the form filled in info from "request" parameter of POST method
 
-app.get('/',function(request,response){
+// app.get('/',function(request,response){
 
-response.render('indexx.ejs')
-});
+// response.render('indexx.ejs')
+// });
 
 app.get('/register', (req,res)=>{
     res.render('register.ejs'); 
@@ -57,4 +58,17 @@ catch{
 };
 
 })
+
+app.ws('/echo', function(ws, req) {
+    ws.on('message', function(msg) {
+        ws.send(msg);
+    });
+});
+
+app.ws('/', function(ws, req) {
+    ws.on('message', function(msg) {
+        console.log(msg);
+    });
+    console.log('socket', req.testing);
+});
 app.listen(5000);
