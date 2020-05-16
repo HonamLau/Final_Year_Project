@@ -156,7 +156,6 @@
               <div class="form-group">
                 <label for="plans">Execute </label>
                 <select class="form-control">
-                  <option value="save">power saving mode</option>
                   <option value="cut">Power disabling</option>
                 </select>
               </div>
@@ -188,15 +187,15 @@
           <!-- <div class="col-lg-6"> -->
             <form style="width: 90%;">
               <div class="form-group">
-                <label>Please enter the username of a user that you want to execute the plan to their workspace:</label>
-                </br>(Or type "ALL" to execute the plan to all users' workspace)
-                <input class="form-control">
+                <label>Please Select the Socket that You Want to Schedule to:</label>
+                <select id = "socketsForManager">
+                  <option value="" disabled selected hidden>Click to Choose Socket</option>
+                </select>>
               </div>
 
               <div class="form-group">
                 <label for="plans">Execute </label>
                 <select class="form-control">
-                  <option value="save">power saving mode</option>
                   <option value="cut">Power disabling</option>
                 </select>
               </div>
@@ -207,8 +206,8 @@
               </div>
 
               <div class="form-group row">
-              <button type='submit' class="btn btn-block btn-success col-xs-6" id='submitForManager'>Submit</button>
-              <input type="button" class="btn btn-block btn-danger col-xs-6" id='cancelForManager'value="Cancel Current Plan">
+              <button type='button' class="btn btn-block btn-success col-xs-6" id='submitForManager'>Submit</button>
+              <input type="button" class="btn btn-block btn-danger col-xs-6" id='cancelForManager'value="Cancel Plan(s) for Selected Socket(s)">
               </div>
             </form>
           <!-- </div> -->
@@ -244,9 +243,19 @@ if(timeOfUser[3]!=0)
 minute = timeOfUser[3]+timeOfUser[4];
 else
 minute = timeOfUser[4];
+var d = new Date();
+console.log(d.getHours());
+console.log(d.getMinutes());
+console.log("hour: "+parseInt(hour));
+console.log("minute: "+parseInt(minute));
 
-console.log("hour: "+hour);
-console.log("minute: "+minute);
+
+if(d.getMinutes()>parseInt(minute)){
+  if(d.getHours()>parseInt(hour))
+  return alert("The Time You Selected Has Already Passed");
+
+}
+
 
 location.href="/powerPlan/schedulePower/?id="+id+"&h="+hour+"&m="+minute;
 }
@@ -254,8 +263,84 @@ location.href="/powerPlan/schedulePower/?id="+id+"&h="+hour+"&m="+minute;
 <script>
 var userCancel = document.getElementById("cancelForUser");
 userCancel.onclick = function(){
+  var p = "<%= p%>"
+  console.log(p)
+  if(p>0){
   var id = "<%= socketID %>";
-  location.href = "/powerPlan/cancelSchedule/?id="+id;
+  location.href = "/powerPlan/cancelSchedule/?id="+id;}
+  else{
+    return alert("There is No Plan Scheduled for Socket: "+"<%= socketID %>");
+  }
+}
+</script>
+<script>
+var socketOption = document.getElementById("socketsForManager");
+var socketListWithUsername = "<%=socketIDForManager%>".split(",");
+var ALL = document.createElement("option");
+ALL.value = "ALL";
+ALL.text = "ALL";
+socketOption.add(ALL);
+for(var i=0; i<socketListWithUsername.length; i = i+2){
+  var x = document.createElement("option");
+  x.value = socketListWithUsername[i].toString();
+  x.text = socketListWithUsername[i].toString()+"( "+socketListWithUsername[i+1].toString()+") ";
+  socketOption.add(x);
+}
+</script>
+<script>
+var managerSubmit = document.getElementById("submitForManager");
+managerSubmit.onclick=function(){
+  var timeOfManager = document.getElementById("timeForManager").value.toString();
+  var hour, minute;
+if(timeOfManager[0]!=0)
+ hour = timeOfManager[0]+timeOfManager[1];
+else
+hour = timeOfManager[1];
+if(timeOfManager[3]!=0)
+minute = timeOfManager[3]+timeOfManager[4];
+else
+minute = timeOfManager[4];
+var q1 = document.getElementById("socketsForManager");
+var ID = q1.options[q1.selectedIndex].value;
+if(ID==""){
+alert("Please First select a Socket!")
+return;
+}
+var d = new Date();
+console.log(d.getHours());
+console.log(d.getMinutes());
+console.log("hour: "+parseInt(hour));
+console.log("minute: "+parseInt(minute));
+
+
+if(d.getMinutes()>parseInt(minute)){
+  if(d.getHours()>parseInt(hour))
+  return alert("The Time You Selected Has Already Passed");
+
+}
+
+  location.href="/powerPlan/schedulePower/?id="+ID+"&h="+hour+"&m="+minute;
+
+
+
+}
+</script>
+<script>
+var managerCancel = document.getElementById("cancelForManager");
+managerCancel.onclick = function(){
+  var pForManager = "<%= pForManager%>"
+  console.log(pForManager)
+var q1 = document.getElementById("socketsForManager");
+var ID = q1.options[q1.selectedIndex].value;
+if(ID==""){
+  return alert("Please First Select a Socket to Cancel")
+}
+  if(pForManager>0){
+  var id = ID.toString();
+  location.href = "/powerPlan/cancelSchedule/?id="+id;}
+  else{
+    return alert("There is No Plan Scheduled for the Socket(s) You selected");
+  }
 }
 </script>
 </body>

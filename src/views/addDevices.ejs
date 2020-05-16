@@ -303,9 +303,9 @@
                     <div class="form-group">
                       <label for="userSelect" >Add To User: </label>
                       <select id="userSelect"  name="userName" class="form-control">
-                        <option>-none-</option>
-                        <option>phsze2</option>
-                        <option value="admin123">admin123</option>
+                        <option value="idle">none</option>
+                        <!-- <option>phsze2</option>
+                        <option value="admin123">admin123</option> -->
                       </select>
                     </div>
                   <!-- </div> -->
@@ -328,6 +328,7 @@
       //     console.log($("#user-management-user").prop("checked"));
       // });
       var waitList = JSON.parse('<%-JSON.stringify(waitList)%>');
+      var userList = JSON.parse('<%-JSON.stringify(userList)%>');
     
     </script>
 

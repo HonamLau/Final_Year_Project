@@ -166,8 +166,16 @@ router.get("/lookup", verify, async (req, res) => {
     { $and: [{ userName: { $ne: null } }, { userName: { $ne: "" } }] },
     { socketID: 1, userName: 1, _id: 0 }
   );
+  var roleCheck = await Users.find({roleLevel: {$lt: req.cookies.userLevel}}, {userName:1});
+  console.log("roleCheck length: "+ roleCheck.length);
+  var RC = [];
+  for(var i=0;i<roleCheck.length;++i){
+    console.log("roleCheck: "+roleCheck[i].userName);
+RC.push(roleCheck[i].userName);
+  }
   var UWS = [];
   for (var i = 0; i < UWSjson.length; ++i) {
+    if(RC.includes(UWSjson[i].userName))
     UWS.push([UWSjson[i].socketID, UWSjson[i].userName]);
   }
   console.log(UWS);
@@ -602,8 +610,16 @@ router.get("/othersWeekly", verify, async (req, res) => {
     { $and: [{ userName: { $ne: null } }, { userName: { $ne: "" } }] },
     { socketID: 1, userName: 1, _id: 0 }
   );
+  var roleCheck = await Users.find({roleLevel: {$lt: req.cookies.userLevel}}, {userName:1});
+  console.log("roleCheck length: "+ roleCheck.length);
+  var RC = [];
+  for(var i=0;i<roleCheck.length;++i){
+    console.log("roleCheck: "+roleCheck[i].userName);
+RC.push(roleCheck[i].userName);
+  }
   var UWS = [];
   for (var i = 0; i < UWSjson.length; ++i) {
+    if(RC.includes(UWSjson[i].userName))
     UWS.push([UWSjson[i].socketID, UWSjson[i].userName]);
   }
   console.log(UWS);

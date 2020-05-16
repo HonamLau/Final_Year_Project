@@ -6,24 +6,47 @@ const verify = require('./verifyToken');
 const Users = require('../models/Users');
 // const bcrypt = require('bcryptjs');
 const Socket =require('../models/Socket');
+const officeHole =require('../models/officeHole');
 const EnUse = require('../models/EnergyUse')
 const daily = require('../models/dailyUsage');
 const WaitingSock =require('../models/WaitingSock');
 const url = require('url');
-const plan = require('../models/PowerPlan')
+const plan = require('../models/PowerPlan');
 
 router.get('/officeManage',verify, async(req,res)=>{
     var socketList = await Socket.find({
     });
-    res.render('manageOffice',{name : req.cookies.user, lv: req.cookies.userLevel, socketList:socketList});
+    var holeList = await officeHole.find({});
+    console.log(holeList);
+    var sList=[];
+
+    for (const sock of socketList) {
+      var add = true;
+      for (const hole of holeList) {
+        if (sock.socketID == hole.holeContentID){
+          add = false;
+          console.log(hole.holeContentID, " in hole");
+        }
+      }
+      if(add){
+        sList.push(sock);
+      }
+      
+    }
+    // console.log(sList);
+    
+    res.render('manageOffice',{name : req.cookies.user, lv: req.cookies.userLevel, socketList:socketList,
+    sList: sList, holeList: holeList});
 });
 
 router.get("/addSocket", verify, async (req, res) => {
   var waitList = await WaitingSock.find({});
+  var userList = await Users.find({});
   res.render("addDevices", {
     name: req.cookies.user,
     lv: req.cookies.userLevel,
-    waitList: waitList
+    waitList: waitList,
+    userList:userList
   });
 });
 
@@ -31,11 +54,20 @@ router.post("/addSocket", verify, async (req, res) => {
   console.log("MAC ", req.body.MAC);
   console.log("id ", req.body.socketID);
   console.log("name ", req.body.userName);
-  var socket = new Socket({
-    socketID: req.body.socketID,
-    userName: req.body.userName,
-    MAC: req.body.MAC
-  });
+  var userList = await Users.find({});
+  var socket;
+  if (req.body.userName == "idle"){
+   socket = new Socket({
+      socketID: req.body.socketID,
+      MAC: req.body.MAC
+    });
+  }else{
+    socket = new Socket({
+      socketID: req.body.socketID,
+      userName: req.body.userName,
+      MAC:req.body.MAC
+    });
+  }
 
   var waitList = await WaitingSock.find({});
   try{
@@ -58,6 +90,7 @@ router.post("/addSocket", verify, async (req, res) => {
       lv: req.cookies.userLevel,
       waitList: waitList,
       success: "Added device "+ socket.socketID + " !",
+      userList:userList
     });
   }catch(e){
     return res.render("addDevices", {
@@ -65,12 +98,13 @@ router.post("/addSocket", verify, async (req, res) => {
       lv: req.cookies.userLevel,
       waitList: waitList,
       error: "Fail to add device! "+ socket.socketID + " !",
+      userList:userList
     });
 
   }
   
 
-  res.redirect('/');
+  // res.redirect('/');
 
 });
 
@@ -83,8 +117,14 @@ router.get("/assignToSocket", verify, async function (req, res) {
     res.send("Access denied");
     return;
   }
-
-  const socketList = await Socket.find({ "$or": [{userName: null}, {userName: ""}]},{socketID:1});
+  const userList = await Users.find({roleLevel: {$lt: req.cookies.userLevel}}, { userName: 1 } );
+  var userData = [];
+  userData.push(req.cookies.user);
+  for (var i = 0; i < userList.length; ++i) {
+    if (userList[i].userName != null && userList[i].userName != undefined)
+      userData.push(userList[i].userName);
+  }
+  const socketList = await Socket.find({ "$or": [{userName: undefined}, {userName: null}, {userName: ""}]},{socketID:1});
   var socketData = [];
   for (var i = 0; i < socketList.length; ++i) {
     socketData.push(socketList[i].socketID);
@@ -103,7 +143,9 @@ router.get("/assignToSocket", verify, async function (req, res) {
   for (var i = 0; i < fullSocketList.length; ++i) {
     if (
       fullSocketList[i].userName != null &&
-      fullSocketList[i].userName != ""
+      fullSocketList[i].userName != "" &&
+      fullSocketList[i].userName != undefined &&
+      userData.includes(fullSocketList[i].userName)
     ) {
       fullData.push([fullSocketList[i].socketID, fullSocketList[i].userName]);
       if(!halfData.includes(fullSocketList[i].userName))
@@ -111,12 +153,12 @@ router.get("/assignToSocket", verify, async function (req, res) {
     }
   }
 
-  const userList = await Users.find({}, { userName: 1 });
-  var userData = [];
-  for (var i = 0; i < userList.length; ++i) {
-    if (userList[i].userName != null && userList[i].userName != undefined)
-      userData.push(userList[i].userName);
-  }
+  // const userList = await Users.find({}, { userName: 1, roleLevel:{$ne:{$gte: req.cookies.userLevel}} });
+  // var userData = [];
+  // for (var i = 0; i < userList.length; ++i) {
+  //   if (userList[i].userName != null && userList[i].userName != undefined)
+  //     userData.push(userList[i].userName);
+  // }
 
   res.render("assignToSocket", {
     userDatas: userData, //All users, 無論有冇socket assigned.

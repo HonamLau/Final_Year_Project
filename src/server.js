@@ -34,6 +34,9 @@ const officeRouter = require('./routes/office');
 const planRouter = require('./routes/powerPlan');
 const schedule = require('node-schedule');
 
+// var timeout = require('connect-timeout');
+// app.use(timeout('5000'));
+
 
 dotenv.config({path:'./src/.env'});
 
@@ -120,54 +123,70 @@ router.post('/removeSocket',verify, async function(req, res){
 });
 
 //save the data sent from Arduino
-app.get('/read', async function(req, res){
-    //var line = req.params.id;
-    //console.log(line);
-    var q=url.parse(req.url,true).query; //req.url = the full link to the website
-    var current=q.current;
-    var id = q.id.toString();
-    var result = await Socket.find({"socketID": id},{powerOn: 1, _id: 0});
-    var OnOff=true;
+// app.get('/read', async function(req, res){
+//     //var line = req.params.id;
+//     //console.log(line);
+//     console.log("arduino");
+//     // res.send("OFF\n");
+//     var test = await Socket.findOne({socketID : "socket1"});
+//     // console.log(test);
+//     if (test){
+//         console.log("send");
+//         if (test.powerOn == true){
+//             res.send("ON\n");
+//         }
+//         else{
+//             res.send("OFF\n");
+//         }
+//     }
+//     return;
 
-    if(result.powerOn==false){
-    current = 0;
-    OnOff = false}
-    var inTable = Socket.find({socketID: id}).countDocuments();
-    if(inTable<1){
-        res.send("OFF");
-        return;
-    }
-    else{
-        var inTable2 = Socket.find({socketID: id});
-        //undefined-> never been assigned a user.
-        //""/null->has been assigned user but now removed.
-        if(inTable2[0].userName==undefined||inTable2[0].userName==""||inTable2[0].userName==null){
-            res.send("OFF");
-            return;
-        }
+    // // res.send("OFF\n");
+    // var q=url.parse(req.url,true).query; //req.url = the full link to the website
+    // var current=q.current;
+    // // var id = q.id.toString();
+    // var id = "socket1";
+    // var result = await Socket.find({socketID: id},{powerOn: 1, _id: 0});
+//     var OnOff=true;
+    
+//     if(result.powerOn==false){
+//     current = 0;
+//     OnOff = false}
+//     var inTable = Socket.find({socketID: id}).countDocuments();
+//     if(inTable<1){
+//         res.send("OFF");
+//         return;
+//     }
+//     else{
+//         var inTable2 = Socket.find({socketID: id});
+//         //undefined-> never been assigned a user.
+//         //""/null->has been assigned user but now removed.
+//         if(inTable2[0].userName==undefined||inTable2[0].userName==""||inTable2[0].userName==null){
+//             res.send("OFF");
+//             return;
+//         }
         
-    }
-    var d = new Date();
-    var ymd = d.getFullYear().toString()+"/"+(d.getMonth()+1).toString()+"/"+d.getDate().toString();
-    await EnUse.insertMany([{"YMD":ymd,"Hour":d.getHours(),"Minute": d.getMinutes(),"dateTIme": d,
-                             "socketID":id, "current":current, "switchOn": OnOff
+//     }
+//     var d = new Date();
+//     var ymd = d.getFullYear().toString()+"/"+(d.getMonth()+1).toString()+"/"+d.getDate().toString();
+//     await EnUse.insertMany([{"YMD":ymd,"Hour":d.getHours(),"Minute": d.getMinutes(),"dateTIme": d,
+//                              "socketID":id, "current":current, "switchOn": OnOff
 
-}]);
- 
+// }]);
 
-    if(result.powerOn==false)
-    res.send("OFF");
 
-    else
-    res.send("ON"); 
+    // console.log(result);
+    // console.log("the socket is right now: " + result[0].powerOn);
+    // if (result[0].powerOn == false) {
+    //     res.send("OFF\n");
+    //     console.log("send off");
+    // } else {
+    //     res.send("ON\n");
+    //     console.log("send on");
+    // }
 
     
-});
-
-
-
-
-
+// });
 
 
 // app.get('/',function(request, response){
@@ -237,11 +256,14 @@ const server = app.listen(5000, async function(){
     }
 });
 
+// server.timeout = 10000;
+
 var io = require('socket.io')(server);
 require('./io.js')(io);
 
 router.get('/testio',async function(req, res){
-    io.emit("testing", "testing");
+    // io.emit("testing", "testing");
+    res.render("io");
 });
 
 var socketClient = require('socket.io-client')('http://143.89.130.87:5000/IOT');
@@ -277,6 +299,45 @@ app.get('/matching', async function(req, res){
 });
 // ----------Server match arduino---------->
 
+router.get('/read', async function (req,res){
+    console.log("arduino is here")
+var q=url.parse(req.url,true).query; //req.url = the full link to the website
+//var id = q.id.toString();
+var mac = q.mac.toString();
+var temp = await Socket.find({MAC: mac});
+// var temp =  await Socket.find({socketID: id});
+//console.log(temp[0].powerOn);
+if(temp!=undefined&&temp!=null&&temp[0].powerOn==true&&temp[0].userName!=null&&temp[0].userName!=undefined&&temp[0].userName!=""){
+    var id = temp[0].socketID;
+    res.send("ON")
+    var c=q.current;
+    var d = new Date();
+    var ymd = d.getFullYear().toString()+"/"+(d.getMonth()+1).toString()+"/"+d.getDate().toString();
+    await EnUse.insertMany({socketID: id.toString(), current: c, YMD: ymd, Hour: d.getHours(), Minute: d.getMinutes(), dateTime: d});
+    console.log("inserted");
+    // real time
+    socketClient.emit("current",id,c);
+    // real time
+    
+    return;
+}
+else{
+    var id = temp[0].socketID;
+    //if 1. not in db or 
+    //   2. powerOn is false 
+    //   3. no user Assigned
+    res.send("OFF");
+    console.log("it's turned off right now")
+      // real time
+      socketClient.emit("current",id,0);
+      // real time
+    return;
+}
+
+
+});
+
+
 // router.get('/home', verify, (req,res)=>{
     
     
@@ -284,52 +345,52 @@ app.get('/matching', async function(req, res){
 // });
 
 router.get("/insertDailyForSocket", async function (req, res) {
-  var year = 2020,
-    month = 4,
-    day = 10,
-    use = 1000,
-    time = 9,
-    current = 15;
-  var q = url.parse(req.url, true).query; //req.url = the full link to the website
-  var id = parseInt(q.id);
-  for (var i = 0; i < 7; ++i) {
-    await daily.insertMany({
-      socketID: id,
-      year: year,
-      month: month,
-      day: day,
-      totalUse: use,
-    });
-    var m = month;
-    var d = new Date(year, m, day);
-    console.log("month = " + d.getMonth());
-    var ymd =
-      d.getFullYear().toString() +
-      "/" +
-      d.getMonth().toString() +
-      "/" +
-      d.getDate().toString();
-    await EnUse.insertMany({
-      socketID: id,
-      YMD: ymd,
-      Hour: time,
-      dateTime: d,
-      current: current,
-      switchOn: true,
-    });
+    var year = 2020,
+        month = 4,
+        day = 10,
+        use = 1000,
+        time = 9,
+        current = 15;
+    var q = url.parse(req.url, true).query; //req.url = the full link to the website
+    var id = parseInt(q.id);
+    for (var i = 0; i < 7; ++i) {
+        await daily.insertMany({
+            socketID: id,
+            year: year,
+            month: month,
+            day: day,
+            totalUse: use,
+        });
+        var m = month;
+        var d = new Date(year, m, day);
+        console.log("month = " + d.getMonth());
+        var ymd =
+            d.getFullYear().toString() +
+            "/" +
+            d.getMonth().toString() +
+            "/" +
+            d.getDate().toString();
+        await EnUse.insertMany({
+            socketID: id,
+            YMD: ymd,
+            Hour: time,
+            dateTime: d,
+            current: current,
+            switchOn: true,
+        });
 
-    if (i % 2 == 1) {
-      use = 2000;
-      time = 12;
-      current = 18;
-    } else {
-      use = 1000;
-      time = 9;
-      current = 15;
+        if (i % 2 == 1) {
+            use = 2000;
+            time = 12;
+            current = 18;
+        } else {
+            use = 1000;
+            time = 9;
+            current = 15;
+        }
+        day = day + 1;
     }
-    day = day + 1;
-  }
-  res.send("insert finished");
+    res.send("insert finished");
 });
 
 router.get('/insertDailyPart2', async function (req, res) {

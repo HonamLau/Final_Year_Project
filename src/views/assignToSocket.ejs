@@ -163,6 +163,8 @@
           <div class="form-group">
             <label for="plans">Please First Select the User to be Removed: </label>
             <select class="form-control" id="userBeingRemoved" onchange="ff()">
+              <option value="" disabled selected hidden>Click to Choose User (by Username)</option>
+
             </select>
           </div>
           <div class="form-group">
@@ -280,10 +282,10 @@ location.href = "removeFromSocket"+"?UN="+UN+"&sId="+sId;
   
   location.href = "assignSocket"+"?UN="+UN+"&sId="+sId;
 
-}
+} 
 </script>
 <script>
-var d = document.getElementById("disconnect");
+var d = document.getElementById("disconnect"); 
 var CanDisconnect = "<%= socketDatas %>".split(","); //socket ids with no owner
 for(var i=0;i<CanDisconnect.length;++i){
   var option = document.createElement("option");

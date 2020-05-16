@@ -23,6 +23,19 @@ $(document).ready(function () {
       $("#radio-List").append(radio);
     }
   }
+
+  if(userList.length > 0){
+    console.log(userList);
+    // $("#userSelect")
+    for (const user of userList) {
+      var option = document.createElement("option");
+      $(option).append(user.userName);
+      $(option).attr("value",user.userName);
+      $("#userSelect").append(option);
+    }
+  }
+
+
   const wait = io.connect("/IOT");
   wait.on("waitingList", (data) => {
     $("#noSocket").css("display","none");

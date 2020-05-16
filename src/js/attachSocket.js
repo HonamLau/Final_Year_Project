@@ -1,4 +1,7 @@
+// import { compare } from "bcryptjs";
+
 $(document).ready(function(){
+  
     console.log(mySocket);
     if(mySocket.length > 0){
 
@@ -56,7 +59,7 @@ $(document).ready(function(){
         onclick: "location.href='/office/assignToSocket'",
           type: "button",
         });
-        $(".modal-body").append(buttonRequest);
+        // $(".modal-body").append(buttonRequest);
         if (lv >=5){
             $(".modal-body").append(buttonAssign);
         }
@@ -67,7 +70,11 @@ $(document).ready(function(){
         $("#planinfo").parent().parent().css("display","block");
 
         if(powerPlan != null){
-          $("#planinfo").append(powerPlan.Hour+":");
+          var hour = powerPlan.Hour.toString();
+          if (hour.length <2){
+            hour = "0" + hour;
+          }
+          $("#planinfo").append(hour+":");
           var minute = powerPlan.Minute.toString();
           console.log(minute.length);
           if (minute.length <2){
@@ -104,6 +111,7 @@ $(document).ready(function(){
         var p = document.createElement("p");
         p.append(attachedSock.minCurrent);
         $(p).css({fontSize: "4rem"});
+        $(p).attr({id: "currentValue"});
         $(".socket-current").append(p);
 
         //------attached socket---->
@@ -176,13 +184,19 @@ $(document).ready(function(){
     const socket = io.connect("/IOT");
     $("input[type=checkbox]").change(function(){
         if(!$(this).is(':checked')){
-          confirm("Confirm switching off socket?");
-          $("#socket").css({animation: ""});
-          socket.emit("powerOnOff", {
-            socketID: attachedSock.socketID,
-            userName: name,
-            powerOn: false
-          });
+          // if(!confirm("Confirm switching off socket?")){
+          //   $("input[type=checkbox]").prop("checked",true);
+          //   return false;
+          // }else{
+            
+            $("#socket").css({animation: ""});
+            $("#currentValue").html("0");
+            socket.emit("powerOnOff", {
+              socketID: attachedSock.socketID,
+              userName: name,
+              powerOn: false  
+            });
+          // }
         }
         else{
         console.log("on");
@@ -193,6 +207,20 @@ $(document).ready(function(){
             powerOn: true
           });
         }
+    });
+
+
+    socket.on("currentToHome", async (id, data) => {
+      console.log("currentToHome");
+      console.log(data, id);
+      console.log(attachedSock.id);
+      console.log(attachedSock.id==id);
+      if (attachedSock.socketID == id){
+        var curr = data.substring(0,5);
+      
+        $("#currentValue").html(curr+"A");
+      }
+
     });
     
 });

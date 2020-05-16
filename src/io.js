@@ -1,5 +1,6 @@
 var Socket = require("./models/Socket");
 var WaitingSock = require("./models/WaitingSock");
+const officeHole =require('./models/officeHole');
 var num;
 var timeout;
 
@@ -78,6 +79,15 @@ module.exports = function (io) {
     });
     // socket disconnect -------->
 
+    socket.on("current", async (id, data) => {
+      console.log("id: =", id);
+      console.log("current: =", data);
+      IOT.emit("currentToHome", id, data);
+    });
+
+
+
+
     socket.on("realtime", async (data) => {
       num = data;
       // setTimeout(sendSignal(num),1000);
@@ -100,9 +110,54 @@ module.exports = function (io) {
         console.log("fail on off");
       }
 
+      var updated = await Socket.findOne({
+        socketID: data.socketID,
+        userName: data.userName
+      });
+      if (updated){
+        IOT.emit("toOffice",data.socketID, updated.powerOn);
+      }
+
     });
 
 
+    socket.on("addToHole", async(holeID, data) =>{
+      console.log("hole");
+      console.log(holeID,data);
+      var sock = await Socket.findOne({
+        socketID: data
+      })
+      console.log(sock);
+      console.log(sock.userName);
+      
+
+      var hole = new officeHole({
+        holeID : holeID,
+        holeContentID : data,
+        userName : sock.userName
+      })
+      const saveHole = await hole.save((err)=>{
+        if(err){
+          console.log(err);
+        }
+      });
+    });
+
+    socket.on("removeFromHole", async(data) =>{
+      console.log("removefromhole");
+      console.log(data);
+      var removefrom = await officeHole.findOneAndRemove({
+        holeContentID : data
+      })
+
+      if(removefrom){
+        console.log("removed");
+        console.log(removefrom);
+      }
+
+    });
+
+    
     function sendSignal(data) {
       num = data == 1 ? 0 : 1;
       // console.log('data to ', data, typeof(data));
